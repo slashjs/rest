@@ -1,11 +1,11 @@
 {
   "name": "@slash.js/rest",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Minimalistic Rest client for the Discord Api used on slash.js",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=14.0.0"
   },
   "keywords": [],
   "scripts": {
@@ -14,9 +14,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/slash.js/rest.git"
+    "url": "git+https://github.com/slashjs/rest.git"
   },
-  "bugs": "https://github.com/slash.js/rest/issues",
+  "bugs": "https://github.com/slashjs/rest/issues",
   "author": "Drylozu",
   "contributors": [
     "MARCROCK22"

@@ -1,6 +1,8 @@
 MIT License
 
-Copyright (c) 2021 DasWolke
+Copyright (c) 2022 Drylozu
+Copyright (c) 2022 MARCROCK22
+Copyright (c) 2022 socram03
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
