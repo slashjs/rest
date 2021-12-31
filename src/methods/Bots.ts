@@ -1,4 +1,5 @@
-import Endpoints from "../Endpoints";
+import type { RESTGetAPIGatewayBotResult, RESTGetAPIGatewayResult } from "discord-api-types";
+import { Routes } from "../Endpoints";
 
 /**
  * Methods for interacting with bot specific endpoints
@@ -27,8 +28,8 @@ class BotMethods {
      * let result = await client.bot.getGateway();
      * // result should be something like {"url": "wss://gateway.discord.gg"}
      */
-    public getGateway(): Promise<GatewayData> {
-        return this.requestHandler.request(Endpoints.GATEWAY, "get", "json");
+    public getGateway(): Promise<RESTGetAPIGatewayResult> {
+        return this.requestHandler.request(Routes.gateway(), "get", "json");
     }
 
     /**
@@ -40,14 +41,9 @@ class BotMethods {
      * let result = await client.bot.getGateway();
      * // result should be something like {"url": "wss://gateway.discord.gg", "shards": 1}
      */
-    public getGatewayBot(): Promise<GatewayData> {
-        return this.requestHandler.request(Endpoints.GATEWAY_BOT, "get", "json");
+    public getGatewayBot(): Promise<RESTGetAPIGatewayBotResult> {
+        return this.requestHandler.request(Routes.gatewayBot(), "get", "json");
     }
-}
-
-interface GatewayData {
-    url: string;
-    shards?: number;
 }
 
 export = BotMethods;

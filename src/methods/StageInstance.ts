@@ -1,4 +1,9 @@
-import Endpoints from "../Endpoints";
+import type {
+    RESTGetAPIStageInstanceResult, RESTPatchAPIStageInstanceJSONBody,
+    RESTPatchAPIStageInstanceResult, RESTPostAPIStageInstanceJSONBody,
+    RESTPostAPIStageInstanceResult
+} from "discord-api-types";
+import { Routes } from "../Endpoints";
 
 /**
  * Methods for interacting with Stage instances
@@ -29,8 +34,8 @@ class StageInstanceMethods {
      * | MUTE_MEMBERS       | always    |
      * | MOVE_MEMBERS       | always    |
      */
-    public async createStageInstance(data: { channel_id: string; topic: string; }): Promise<import("discord-typings").StageInstanceData> {
-        return this.requestHandler.request(Endpoints.STAGE_INSTANCES, "post", "json", data);
+    public async createStageInstance(data: RESTPostAPIStageInstanceJSONBody): Promise<RESTPostAPIStageInstanceResult> {
+        return this.requestHandler.request(Routes.stageInstances(), "post", "json", data);
     }
 
     /**
@@ -38,8 +43,8 @@ class StageInstanceMethods {
      * @param channelId Id of the stage channel
      * @returns a [stage instance](https://discord.com/developers/docs/resources/stage-instance#auto-closing-stage-instance-structure) object
      */
-    public async getStageInstance(channelId: string): Promise<import("discord-typings").StageInstanceData> {
-        return this.requestHandler.request(Endpoints.STAGE_INSTANCE_CHANNEL(channelId), "get", "json");
+    public async getStageInstance(channelId: string): Promise<RESTGetAPIStageInstanceResult> {
+        return this.requestHandler.request(Routes.stageInstance(channelId), "get", "json");
     }
 
     /**
@@ -54,8 +59,8 @@ class StageInstanceMethods {
      * | MUTE_MEMBERS       | always    |
      * | MOVE_MEMBERS       | always    |
      */
-    public async editStageInstance(channelId: string, data: { topic: string; }): Promise<import("discord-typings").StageInstanceData> {
-        return this.requestHandler.request(Endpoints.STAGE_INSTANCE_CHANNEL(channelId), "patch", "json", data);
+    public async editStageInstance(channelId: string, data: RESTPatchAPIStageInstanceJSONBody): Promise<RESTPatchAPIStageInstanceResult> {
+        return this.requestHandler.request(Routes.stageInstance(channelId), "patch", "json", data);
     }
 
     /**
@@ -69,8 +74,8 @@ class StageInstanceMethods {
      * | MUTE_MEMBERS       | always    |
      * | MOVE_MEMBERS       | always    |
      */
-    public async deleteStageInstance(channelId: string): Promise<import("discord-typings").StageInstanceData> {
-        return this.requestHandler.request(Endpoints.STAGE_INSTANCE_CHANNEL(channelId), "delete", "json");
+    public async deleteStageInstance(channelId: string): Promise<void> {
+        return this.requestHandler.request(Routes.stageInstance(channelId), "delete", "json");
     }
 }
 

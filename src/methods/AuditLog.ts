@@ -1,4 +1,5 @@
-import Endpoints from "../Endpoints";
+import type { RESTGetAPIAuditLogQuery, RESTGetAPIAuditLogResult } from "discord-api-types";
+import { Routes } from "../Endpoints";
 
 /**
  * Methods for interacting with Guild Audit Logs
@@ -28,28 +29,9 @@ class AuditLogMethods {
      * |--------------------|-----------|
      * | VIEW_AUDIT_LOG     | always    |
      */
-    public async getAuditLog(guildId: string, data?: GetAuditLogOptions): Promise<import("discord-typings").AuditLogObject> {
-        return this.requestHandler.request(Endpoints.GUILD_AUDIT_LOGS(guildId), "get", "json", data);
+    public async getAuditLog(guildId: string, data?: RESTGetAPIAuditLogQuery): Promise<RESTGetAPIAuditLogResult> {
+        return this.requestHandler.request(Routes.guildAuditLog(guildId), "get", "json", data);
     }
-}
-
-interface GetAuditLogOptions {
-    /**
-     * Filter the audit log with the id of a user
-     */
-    user_id?: string;
-    /**
-     * [Type](https://discord.com/developers/docs/resources/audit-log#audit-log-entry-object-audit-log-events) of the audit log event
-     */
-    action_type?: import("discord-typings").AuditLogEventType;
-    /**
-     * Filter the audit log before a certain entry id
-     */
-    before?: string;
-    /**
-     * How many entries are returned (min 1, max 100)
-     */
-    limit: number;
 }
 
 export = AuditLogMethods;

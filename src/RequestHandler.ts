@@ -4,7 +4,7 @@
 import { EventEmitter } from "events";
 import crypto from "crypto";
 import c from "centra";
-import Endpoints from "./Endpoints";
+import { BASE_HOST, BASE_URL } from "./Endpoints";
 import FormData from "form-data";
 
 const { version } = require("../package.json");
@@ -94,16 +94,16 @@ class RequestHandler extends EventEmitter {
 
         this.ratelimiter = ratelimiter;
         this.options = {
-            baseHost: Endpoints.BASE_HOST,
-            baseURL: Endpoints.BASE_URL,
+            baseHost: BASE_HOST,
+            baseURL: BASE_URL,
             headers: {
                 Authorization: options.token,
-                "User-Agent": `DiscordBot (https://github.com/DasWolke/SnowTransfer, ${version})`
+                "User-Agent": `DiscordBot (https://github.com/slashjs/slash.js, ${version})`
             }
         };
         Object.assign(this.options, options);
 
-        this.apiURL = this.options.baseHost + Endpoints.BASE_URL;
+        this.apiURL = this.options.baseHost + BASE_URL;
         this.latency = 500;
     }
 

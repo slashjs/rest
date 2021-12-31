@@ -1,4 +1,15 @@
-import Endpoints from "../Endpoints";
+import type {
+    RESTGetAPIApplicationCommandPermissionsResult, RESTGetAPIApplicationCommandResult, RESTGetAPIApplicationCommandsResult,
+    RESTGetAPIApplicationGuildCommandResult, RESTGetAPIApplicationGuildCommandsResult, RESTGetAPIGuildApplicationCommandsPermissionsResult,
+    RESTGetAPIInteractionFollowupResult, RESTGetAPIWebhookWithTokenMessageResult, RESTPatchAPIApplicationCommandJSONBody,
+    RESTPatchAPIApplicationCommandResult, RESTPatchAPIInteractionFollowupResult, RESTPatchAPIInteractionOriginalResponseResult,
+    RESTPostAPIApplicationCommandsJSONBody, RESTPostAPIApplicationCommandsResult, RESTPostAPIApplicationGuildCommandsJSONBody,
+    RESTPostAPIApplicationGuildCommandsResult, RESTPostAPIInteractionCallbackJSONBody, RESTPostAPIInteractionFollowupResult,
+    RESTPutAPIApplicationCommandPermissionsJSONBody, RESTPutAPIApplicationCommandPermissionsResult, RESTPutAPIApplicationCommandsJSONBody,
+    RESTPutAPIApplicationCommandsResult, RESTPutAPIApplicationGuildCommandsJSONBody, RESTPutAPIApplicationGuildCommandsResult,
+    RESTPutAPIGuildApplicationCommandsPermissionsJSONBody, RESTPutAPIGuildApplicationCommandsPermissionsResult
+} from "discord-api-types";
+import { Routes } from "../Endpoints";
 
 type WebhookMethods = import("./Webhooks");
 
@@ -27,8 +38,8 @@ class InteractionMethods {
      * @param appId The Id of the application
      * @returns An Array of [application command](https://discord.com/developers/docs/interactions/slash-commands#application-command-object) objects
      */
-    public getApplicationCommands(appId: string): Promise<Array<import("discord-typings").ApplicationCommand>> {
-        return this.requestHandler.request(Endpoints.APPLICATION_COMMANDS(appId), "get", "json");
+    public getApplicationCommands(appId: string): Promise<RESTGetAPIApplicationCommandsResult> {
+        return this.requestHandler.request(Routes.applicationCommands(appId), "get", "json");
     }
 
     /**
@@ -37,8 +48,8 @@ class InteractionMethods {
      * @param cmdId The Id of the command
      * @returns An [application command](https://discord.com/developers/docs/interactions/slash-commands#application-command-object) object
      */
-    public getApplicationCommand(appId: string, cmdId: string): Promise<import("discord-typings").ApplicationCommand> {
-        return this.requestHandler.request(Endpoints.APPLICATION_COMMAND(appId, cmdId), "get", "json");
+    public getApplicationCommand(appId: string, cmdId: string): Promise<RESTGetAPIApplicationCommandResult> {
+        return this.requestHandler.request(Routes.applicationCommand(appId, cmdId), "get", "json");
     }
 
     /**
@@ -47,8 +58,8 @@ class InteractionMethods {
      * @param data The command data
      * @returns An [application command](https://discord.com/developers/docs/interactions/slash-commands#application-command-object) object
      */
-    public createApplicationCommand(appId: string, data: CommandData & { type?: import("discord-typings").ApplicationCommandType; }): Promise<import("discord-typings").ApplicationCommand> {
-        return this.requestHandler.request(Endpoints.APPLICATION_COMMANDS(appId), "post", "json", data);
+    public createApplicationCommand(appId: string, data: RESTPostAPIApplicationCommandsJSONBody): Promise<RESTPostAPIApplicationCommandsResult> {
+        return this.requestHandler.request(Routes.applicationCommands(appId), "post", "json", data);
     }
 
     /**
@@ -58,8 +69,8 @@ class InteractionMethods {
      * @param data The command data
      * @returns An [application command](https://discord.com/developers/docs/interactions/slash-commands#application-command-object) object
      */
-    public editApplicationCommand(appId: string, cmdId: string, data: Partial<CommandData>): Promise<import("discord-typings").ApplicationCommand> {
-        return this.requestHandler.request(Endpoints.APPLICATION_COMMAND(appId, cmdId), "patch", "json", data);
+    public editApplicationCommand(appId: string, cmdId: string, data: RESTPatchAPIApplicationCommandJSONBody): Promise<RESTPatchAPIApplicationCommandResult> {
+        return this.requestHandler.request(Routes.applicationCommand(appId, cmdId), "patch", "json", data);
     }
 
     /**
@@ -69,8 +80,8 @@ class InteractionMethods {
      * @param data Array of commands
      * @returns An Array of [application command](https://discord.com/developers/docs/interactions/slash-commands#application-command-object) objects
      */
-    public bulkOverwriteApplicationCommands(appId: string, data: Array<CommandData & { type?: import("discord-typings").ApplicationCommandType; }>): Promise<Array<import("discord-typings").ApplicationCommand>> {
-        return this.requestHandler.request(Endpoints.APPLICATION_COMMANDS(appId), "put", "json", data);
+    public bulkOverwriteApplicationCommands(appId: string, data: RESTPutAPIApplicationCommandsJSONBody): Promise<RESTPutAPIApplicationCommandsResult> {
+        return this.requestHandler.request(Routes.applicationCommands(appId), "put", "json", data);
     }
 
     /**
@@ -80,7 +91,7 @@ class InteractionMethods {
      * @returns Resolves the Promise on successful execution
      */
     public deleteApplicationCommand(appId: string, cmdId: string): Promise<void> {
-        return this.requestHandler.request(Endpoints.APPLICATION_COMMAND(appId, cmdId), "delete", "json");
+        return this.requestHandler.request(Routes.applicationCommand(appId, cmdId), "delete", "json");
     }
 
     /**
@@ -89,8 +100,8 @@ class InteractionMethods {
      * @param guildId The Id of the guild
      * @returns An Array of [application command](https://discord.com/developers/docs/interactions/slash-commands#application-command-object) objects
      */
-    public getGuildApplicationCommands(appId: string, guildId: string): Promise<Array<import("discord-typings").ApplicationCommand>> {
-        return this.requestHandler.request(Endpoints.APPLICATION_GUILD_COMMANDS(appId, guildId), "get", "json");
+    public getGuildApplicationCommands(appId: string, guildId: string): Promise<RESTGetAPIApplicationGuildCommandsResult> {
+        return this.requestHandler.request(Routes.applicationGuildCommands(appId, guildId), "get", "json");
     }
 
     /**
@@ -100,8 +111,8 @@ class InteractionMethods {
      * @param cmdId The Id of the command
      * @returns An [application command](https://discord.com/developers/docs/interactions/slash-commands#application-command-object) object
      */
-    public getGuildApplicationCommand(appId: string, guildId: string, cmdId: string): Promise<import("discord-typings").ApplicationCommand> {
-        return this.requestHandler.request(Endpoints.APPLICATION_GUILD_COMMAND(appId, guildId, cmdId), "get", "json");
+    public getGuildApplicationCommand(appId: string, guildId: string, cmdId: string): Promise<RESTGetAPIApplicationGuildCommandResult> {
+        return this.requestHandler.request(Routes.applicationGuildCommand(appId, guildId, cmdId), "get", "json");
     }
 
     /**
@@ -111,8 +122,8 @@ class InteractionMethods {
      * @param data Command data
      * @returns An [application command](https://discord.com/developers/docs/interactions/slash-commands#application-command-object) object
      */
-    public createGuildApplicationCommand(appId: string, guildId: string, data: CommandData & { type?: import("discord-typings").ApplicationCommandType; }): Promise<import("discord-typings").ApplicationCommand> {
-        return this.requestHandler.request(Endpoints.APPLICATION_GUILD_COMMANDS(appId, guildId), "post", "json", data);
+    public createGuildApplicationCommand(appId: string, guildId: string, data: RESTPostAPIApplicationGuildCommandsJSONBody): Promise<RESTPostAPIApplicationGuildCommandsResult> {
+        return this.requestHandler.request(Routes.applicationGuildCommands(appId, guildId), "post", "json", data);
     }
 
     /**
@@ -123,8 +134,8 @@ class InteractionMethods {
      * @param data New command data
      * @returns An [application command](https://discord.com/developers/docs/interactions/slash-commands#application-command-object) object
      */
-    public editGuildApplicationCommand(appId: string, guildId: string, cmdId: string, data: Partial<CommandData>): Promise<import("discord-typings").ApplicationCommand> {
-        return this.requestHandler.request(Endpoints.APPLICATION_GUILD_COMMAND(appId, guildId, cmdId), "patch", "json", data);
+    public editGuildApplicationCommand(appId: string, guildId: string, cmdId: string, data: RESTPutAPIApplicationGuildCommandsJSONBody): Promise<RESTPutAPIApplicationGuildCommandsResult> {
+        return this.requestHandler.request(Routes.applicationGuildCommand(appId, guildId, cmdId), "patch", "json", data);
     }
 
     /**
@@ -134,8 +145,8 @@ class InteractionMethods {
      * @param data Array of commands
      * @returns An Array of [application command](https://discord.com/developers/docs/interactions/slash-commands#application-command-object) objects
      */
-    public bulkOverwriteGuildApplicationCommand(appId: string, guildId: string, data: Array<CommandData & { type?: import("discord-typings").ApplicationCommandType; }>): Promise<Array<import("discord-typings").ApplicationCommand>> {
-        return this.requestHandler.request(Endpoints.APPLICATION_GUILD_COMMANDS(appId, guildId), "put", "json", data);
+    public bulkOverwriteGuildApplicationCommand(appId: string, guildId: string, data: RESTPutAPIApplicationGuildCommandsJSONBody): Promise<RESTPutAPIApplicationGuildCommandsResult> {
+        return this.requestHandler.request(Routes.applicationGuildCommands(appId, guildId), "put", "json", data);
     }
 
     /**
@@ -146,7 +157,7 @@ class InteractionMethods {
      * @returns Resolves the Promise on successful execution
      */
     public deleteGuildApplicationCommand(appId: string, guildId: string, cmdId: string): Promise<void> {
-        return this.requestHandler.request(Endpoints.APPLICATION_GUILD_COMMAND(appId, guildId, cmdId), "delete", "json");
+        return this.requestHandler.request(Routes.applicationGuildCommand(appId, guildId, cmdId), "delete", "json");
     }
 
     /**
@@ -155,7 +166,7 @@ class InteractionMethods {
      * @param token The token of the interaction
      * @returns A [message](https://discord.com/developers/docs/resources/channel#message-object) object
      */
-    public getOriginalInteractionResponse(appId: string, token: string): Promise<import("discord-typings").MessageData> {
+    public getOriginalInteractionResponse(appId: string, token: string): Promise<RESTGetAPIWebhookWithTokenMessageResult> {
         return this.webhooks.getWebhookMessage(appId, token, "@original");
     }
 
@@ -166,8 +177,8 @@ class InteractionMethods {
      * @param data Response data
      * @returns Resolves the Promise on successful execution
      */
-    public createInteractionResponse(interactionId: string, token: string, data: import("discord-typings").InteractionResponseData): Promise<void> {
-        return this.requestHandler.request(Endpoints.INTERACTION_CALLBACK(interactionId, token), "post", "json", data);
+    public createInteractionResponse(interactionId: string, token: string, data: RESTPostAPIInteractionCallbackJSONBody): Promise<void> {
+        return this.requestHandler.request(Routes.interactionCallback(interactionId, token), "post", "json", data);
     }
 
     /**
@@ -177,7 +188,7 @@ class InteractionMethods {
      * @param data New response data
      * @returns A [message](https://discord.com/developers/docs/resources/channel#message-object) object
      */
-    public editOriginalInteractionResponse(appId: string, token: string, data: Parameters<WebhookMethods["editWebhookMessage"]>[3]): Promise<import("discord-typings").MessageData> {
+    public editOriginalInteractionResponse(appId: string, token: string, data: Parameters<WebhookMethods["editWebhookMessage"]>[3]): Promise<RESTPatchAPIInteractionOriginalResponseResult> {
         return this.webhooks.editWebhookMessage(appId, token, "@original", data);
     }
 
@@ -198,9 +209,9 @@ class InteractionMethods {
      * @param data Message data
      * @returns A [message](https://discord.com/developers/docs/resources/channel#message-object) object
      */
-    public createFollowupMessage(appId: string, token: string, data: Parameters<WebhookMethods["executeWebhook"]>[2] & { flags?: number; }): Promise<import("discord-typings").MessageData> {
-        // wait is always true for interactions
-        return this.webhooks.executeWebhook(appId, token, data) as unknown as Promise<import("discord-typings").MessageData>;
+    public createFollowupMessage(appId: string, token: string, data: Parameters<WebhookMethods["executeWebhook"]>[2] & { flags?: number; }): Promise<RESTPostAPIInteractionFollowupResult> {
+        // 'wait' is always true for interactions
+        return this.webhooks.executeWebhook(appId, token, data) as unknown as Promise<RESTPostAPIInteractionFollowupResult>;
     }
 
     /**
@@ -210,7 +221,7 @@ class InteractionMethods {
      * @param messageId The Id of the message
      * @returns A [message](https://discord.com/developers/docs/resources/channel#message-object) object
      */
-    public getFollowupMessage(appId: string, token: string, messageId: string) {
+    public getFollowupMessage(appId: string, token: string, messageId: string): Promise<RESTGetAPIInteractionFollowupResult> {
         return this.webhooks.getWebhookMessage(appId, token, messageId);
     }
 
@@ -222,7 +233,7 @@ class InteractionMethods {
      * @param data The new message data
      * @returns A [message](https://discord.com/developers/docs/resources/channel#message-object) object
      */
-    public editFollowupMessage(appId: string, token: string, messageId: string, data: Parameters<WebhookMethods["editWebhookMessage"]>[3]): Promise<import("discord-typings").MessageData> {
+    public editFollowupMessage(appId: string, token: string, messageId: string, data: Parameters<WebhookMethods["editWebhookMessage"]>[3]): Promise<RESTPatchAPIInteractionFollowupResult> {
         return this.webhooks.editWebhookMessage(appId, token, messageId, data);
     }
 
@@ -243,8 +254,8 @@ class InteractionMethods {
      * @param guildId The Id of the guild
      * @returns An Array of [guild application command permission](https://discord.com/developers/docs/interactions/slash-commands#application-command-permissions-object-guild-application-command-permissions-structure) objects
      */
-    public getGuildApplicationCommandPermissions(appId: string, guildId: string): Promise<Array<import("discord-typings").GuildApplicationCommandPermissions>> {
-        return this.requestHandler.request(Endpoints.GUILD_APPLICATION_COMMAND_PERMISSIONS(appId, guildId), "get", "json");
+    public getGuildApplicationCommandPermissions(appId: string, guildId: string): Promise<RESTGetAPIGuildApplicationCommandsPermissionsResult> {
+        return this.requestHandler.request(Routes.guildApplicationCommandsPermissions(appId, guildId), "get", "json");
     }
 
     /**
@@ -254,8 +265,8 @@ class InteractionMethods {
      * @param cmdId The Id of the command
      * @returns A [guild application command permission](https://discord.com/developers/docs/interactions/slash-commands#application-command-permissions-object-guild-application-command-permissions-structure) object
      */
-    public getApplicationCommandPermissions(appId: string, guildId: string, cmdId: string): Promise<import("discord-typings").GuildApplicationCommandPermissions> {
-        return this.requestHandler.request(Endpoints.APPLICATION_COMMAND_PERMISSIONS(appId, guildId, cmdId), "get", "json");
+    public getApplicationCommandPermissions(appId: string, guildId: string, cmdId: string): Promise<RESTGetAPIApplicationCommandPermissionsResult> {
+        return this.requestHandler.request(Routes.applicationCommandPermissions(appId, guildId, cmdId), "get", "json");
     }
 
     /**
@@ -266,11 +277,8 @@ class InteractionMethods {
      * @param permissions New application command permissions data
      * @returns A [guild application command permission](https://discord.com/developers/docs/interactions/slash-commands#application-command-permissions-object-guild-application-command-permissions-structure) object
      */
-    public editApplicationCommandPermissions(appId: string, guildId: string, cmdId: string, permissions: Array<Exclude<import("discord-typings").ApplicationCommandPermissions, "id">>): Promise<import("discord-typings").GuildApplicationCommandPermissions> {
-        const payload = {
-            permissions: permissions
-        };
-        return this.requestHandler.request(Endpoints.APPLICATION_COMMAND_PERMISSIONS(appId, guildId, cmdId), "put", "json", payload);
+    public editApplicationCommandPermissions(appId: string, guildId: string, cmdId: string, data: RESTPutAPIApplicationCommandPermissionsJSONBody): Promise<RESTPutAPIApplicationCommandPermissionsResult> {
+        return this.requestHandler.request(Routes.applicationCommandPermissions(appId, guildId, cmdId), "put", "json", data);
     }
 
     /**
@@ -281,16 +289,9 @@ class InteractionMethods {
      * @param permissions New application command permissions data Array
      * @returns An Array of [guild application command permission](https://discord.com/developers/docs/interactions/slash-commands#application-command-permissions-object-guild-application-command-permissions-structure) objects
      */
-    public batchEditApplicationCommandPermissions(appId: string, guildId: string, permissions: Array<Pick<import("discord-typings").GuildApplicationCommandPermissions, "id" | "permissions">>): Promise<Array<import("discord-typings").GuildApplicationCommandPermissions>> {
-        return this.requestHandler.request(Endpoints.GUILD_APPLICATION_COMMAND_PERMISSIONS(appId, guildId), "put", "json", permissions);
+    public batchEditApplicationCommandPermissions(appId: string, guildId: string, permissions: RESTPutAPIGuildApplicationCommandsPermissionsJSONBody): Promise<RESTPutAPIGuildApplicationCommandsPermissionsResult> {
+        return this.requestHandler.request(Routes.guildApplicationCommandsPermissions(appId, guildId), "put", "json", permissions);
     }
 }
 
 export = InteractionMethods;
-
-interface CommandData {
-    name: string;
-    description: string;
-    options?: Array<import("discord-typings").ApplicationCommandOption>;
-    default_permission?: boolean;
-}

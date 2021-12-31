@@ -12,7 +12,7 @@ import VoiceMethods from "./methods/Voices";
 import BotMethods from "./methods/Bots";
 import AuditLogMethods from "./methods/AuditLog";
 import StageInstanceMethods from "./methods/StageInstance";
-import Endpoints from "./Endpoints";
+import { BASE_HOST } from "./Endpoints";
 
 const { version } = require("../package.json");
 
@@ -46,13 +46,13 @@ class SnowTransfer {
         if (!token.startsWith("Bot")) {
             token = `Bot ${token}`;
         }
-        this.options = { baseHost: Endpoints.BASE_HOST, disableEveryone: false, sentryOptions: { extra: { snowtransferVersion: version } }, useRedis: false };
+        this.options = { baseHost: BASE_HOST, disableEveryone: false, sentryOptions: { extra: { snowtransferVersion: version } }, useRedis: false };
         this.token = token;
         Object.assign(this.options, options);
         this.ratelimiter = new Ratelimiter();
         this.requestHandler = new RequestHandler(this.ratelimiter, {
             token: this.token,
-            baseHost: this.options.baseHost || Endpoints.BASE_HOST
+            baseHost: this.options.baseHost || BASE_HOST
         });
         this.channel = new ChannelMethods(this.requestHandler, this.options.disableEveryone);
         this.user = new UserMethods(this.requestHandler);

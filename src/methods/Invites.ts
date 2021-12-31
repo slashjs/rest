@@ -1,4 +1,5 @@
-import Endpoints from "../Endpoints";
+import type { RESTDeleteAPIInviteResult, RESTGetAPIInviteQuery, RESTGetAPIInviteResult } from "discord-api-types";
+import { Routes } from "../Endpoints";
 
 /**
  * Methods for interacting with invites
@@ -24,8 +25,8 @@ class InviteMethods {
      * @param withCounts When set to true you get an invite object with additional `approximate_presence_count` and `approximate_member_count` fields
      * @returns [Invite Object](https://discord.com/developers/docs/resources/invite#invite-object)
      */
-    public async getInvite(inviteId: string, options?: { with_counts?: boolean; with_expiration?: boolean; }): Promise<import("discord-typings").InviteData> {
-        return this.requestHandler.request(Endpoints.INVITE(inviteId), "get", "json", options);
+    public async getInvite(inviteId: string, options?: RESTGetAPIInviteQuery): Promise<RESTGetAPIInviteResult> {
+        return this.requestHandler.request(Routes.invite(inviteId), "get", "json", options);
     }
 
     /**
@@ -38,8 +39,8 @@ class InviteMethods {
      * | MANAGE_CHANNELS    | for invite that belongs to a specific channel |
      * | MANAGE_GUILD       | delete any invite guild wide                  |
      */
-    public async deleteInvite(inviteId: string): Promise<import("discord-typings").InviteData> {
-        return this.requestHandler.request(Endpoints.INVITE(inviteId), "delete", "json");
+    public async deleteInvite(inviteId: string): Promise<RESTDeleteAPIInviteResult> {
+        return this.requestHandler.request(Routes.invite(inviteId), "delete", "json");
     }
 }
 

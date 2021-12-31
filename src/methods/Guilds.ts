@@ -1,4 +1,21 @@
-import Endpoints from "../Endpoints";
+import type {
+    APIGuild, APIGuildMember, APIGuildPreview, APIGuildWelcomeScreen,
+    RESTGetAPIGuildBansResult, RESTGetAPIGuildChannelsResult, RESTGetAPIGuildIntegrationsResult,
+    RESTGetAPIGuildInvitesResult, RESTGetAPIGuildMemberResult, RESTGetAPIGuildMembersQuery,
+    RESTGetAPIGuildMembersSearchResult, RESTGetAPIGuildMembersResult, RESTGetAPIGuildMembersSearchQuery,
+    RESTGetAPIGuildPruneCountQuery, RESTGetAPIGuildPruneCountResult, RESTGetAPIGuildRolesResult,
+    RESTGetAPIGuildThreadsResult, RESTGetAPIGuildVanityUrlResult, RESTGetAPIGuildVoiceRegionsResult,
+    RESTGetAPIGuildWelcomeScreenResult, RESTGetAPIGuildWidgetJSONResult, RESTGetAPIGuildWidgetSettingsResult,
+    RESTPatchAPIGuildChannelPositionsJSONBody, RESTPatchAPIGuildJSONBody, RESTPatchAPIGuildMemberJSONBody,
+    RESTPatchAPIGuildResult, RESTPatchAPIGuildRoleJSONBody, RESTPatchAPIGuildRolePositionsResult,
+    RESTPatchAPIGuildRoleResult, RESTPatchAPIGuildVoiceStateCurrentMemberJSONBody,
+    RESTPatchAPIGuildVoiceStateUserJSONBody, RESTPatchAPIGuildWelcomeScreenJSONBody,
+    RESTPatchAPIGuildWidgetSettingsJSONBody, RESTPatchAPIGuildWidgetSettingsResult, RESTPostAPIGuildChannelJSONBody,
+    RESTPostAPIGuildChannelResult, RESTPostAPIGuildPruneJSONBody, RESTPostAPIGuildPruneResult,
+    RESTPostAPIGuildRoleJSONBody, RESTPostAPIGuildRoleResult, RESTPostAPIGuildsJSONBody, RESTPostAPIGuildsResult,
+    RESTPutAPIGuildMemberJSONBody
+} from "discord-api-types";
+import { Routes } from "../Endpoints";
 
 /**
  * Methods for interacting with Guilds
@@ -32,8 +49,8 @@ class GuildMethods {
      * }
      * client.guild.createGuild(guildData)
      */
-    public async createGuild(data: CreateGuildData): Promise<import("discord-typings").GuildData> {
-        return this.requestHandler.request(Endpoints.GUILDS, "post", "json", data);
+    public async createGuild(data: RESTPostAPIGuildsJSONBody): Promise<RESTPostAPIGuildsResult> {
+        return this.requestHandler.request(Routes.guilds(), "post", "json", data);
     }
 
     /**
@@ -43,12 +60,12 @@ class GuildMethods {
      * @param guildId Id of the guild
      * @returns [Guild object](https://discord.com/developers/docs/resources/guild#guild-object)
      */
-    public async getGuild(guildId: string, options?: { with_counts?: boolean; }): Promise<import("discord-typings").GuildData> {
-        return this.requestHandler.request(Endpoints.GUILD(guildId), "get", "json", options);
+    public async getGuild(guildId: string, options?: { with_counts?: boolean; }): Promise<APIGuild> {
+        return this.requestHandler.request(Routes.guild(guildId), "get", "json", options);
     }
 
-    public async getGuildPreview(guildId: string): Promise<import("discord-typings").GuildPreviewData> {
-        return this.requestHandler.request(Endpoints.GUILD_PREVIEW(guildId), "get", "json");
+    public async getGuildPreview(guildId: string): Promise<APIGuildPreview> {
+        return this.requestHandler.request(Routes.guildPreview(guildId), "get", "json");
     }
 
     /**
@@ -69,8 +86,8 @@ class GuildMethods {
      * }
      * client.guild.updateGuild('guild Id', guildData)
      */
-    public async updateGuild(guildId: string, data: UpdateGuildData): Promise<import("discord-typings").GuildData> {
-        return this.requestHandler.request(Endpoints.GUILD(guildId), "patch", "json", data);
+    public async updateGuild(guildId: string, data: RESTPatchAPIGuildJSONBody): Promise<RESTPatchAPIGuildResult> {
+        return this.requestHandler.request(Routes.guild(guildId), "patch", "json", data);
     }
 
     /**
@@ -83,7 +100,7 @@ class GuildMethods {
      * @returns Resolves the Promise on successful execution
      */
     public async deleteGuild(guildId: string): Promise<void> {
-        return this.requestHandler.request(Endpoints.GUILD(guildId), "delete", "json");
+        return this.requestHandler.request(Routes.guild(guildId), "delete", "json");
     }
 
     /**
@@ -91,8 +108,8 @@ class GuildMethods {
      * @param guildId Id of the guild
      * @returns list of [channels](https://discord.com/developers/docs/resources/channel#channel-object-channel-structure)
      */
-    public async getGuildChannels(guildId: string): Promise<Array<import("discord-typings").GuildChannelData>> {
-        return this.requestHandler.request(Endpoints.GUILD_CHANNELS(guildId), "get", "json");
+    public async getGuildChannels(guildId: string): Promise<RESTGetAPIGuildChannelsResult> {
+        return this.requestHandler.request(Routes.guildChannels(guildId), "get", "json");
     }
 
     /**
@@ -106,8 +123,8 @@ class GuildMethods {
      * | MANAGE_CHANNELS    | always                                        |
      * | ADMINISTRATOR      | setting MANAGE_ROLES in permission_overwrites |
      */
-    public async createGuildChannel(guildId: string, data: CreateGuildChannelData): Promise<import("discord-typings").GuildChannelData> {
-        return this.requestHandler.request(Endpoints.GUILD_CHANNELS(guildId), "post", "json", data);
+    public async createGuildChannel(guildId: string, data: RESTPostAPIGuildChannelJSONBody): Promise<RESTPostAPIGuildChannelResult> {
+        return this.requestHandler.request(Routes.guildChannels(guildId), "post", "json", data);
     }
 
     /**
@@ -115,8 +132,8 @@ class GuildMethods {
      * @param guildId Id of the guild
      * @returns Resolves the Promise on successful execution
      */
-    public async updateChannelPositions(guildId: string, data: Array<{ id: string; position?: number | null; lock_permissions?: boolean | null; parent_id?: string | null; }>): Promise<void> {
-        return this.requestHandler.request(Endpoints.GUILD_CHANNELS(guildId), "patch", "json", data);
+    public async updateChannelPositions(guildId: string, data: RESTPatchAPIGuildChannelPositionsJSONBody): Promise<void> {
+        return this.requestHandler.request(Routes.guildChannels(guildId), "patch", "json", data);
     }
 
     /**
@@ -124,8 +141,8 @@ class GuildMethods {
      * @param guildId Id of the guild
      * @returns All active threads and members the current user has access to.
      */
-    public async listActiveThreads(guildId: string): Promise<{ threads: Array<import("discord-typings").ThreadChannelData>; members: Array<import("discord-typings").ThreadMemberData>; }> {
-        return this.requestHandler.request(Endpoints.GUILD_THREADS_ACTIVE(guildId), "get", "json");
+    public async listActiveThreads(guildId: string): Promise<RESTGetAPIGuildThreadsResult> {
+        return this.requestHandler.request(Routes.guildActiveThreads(guildId), "get", "json");
     }
 
     /**
@@ -134,8 +151,8 @@ class GuildMethods {
      * @param memberId Id of the guild member
      * @returns [guild member](https://discord.com/developers/docs/resources/guild#guild-member-object-guild-member-structure)
      */
-    public async getGuildMember(guildId: string, memberId: string): Promise<import("discord-typings").MemberData> {
-        return this.requestHandler.request(Endpoints.GUILD_MEMBER(guildId, memberId), "get", "json");
+    public async getGuildMember(guildId: string, memberId: string): Promise<RESTGetAPIGuildMemberResult> {
+        return this.requestHandler.request(Routes.guildMember(guildId, memberId), "get", "json");
     }
 
     /**
@@ -144,8 +161,8 @@ class GuildMethods {
      * @param data query data
      * @returns list of [guild members](https://discord.com/developers/docs/resources/guild#guild-member-object-guild-member-structure)
      */
-    public async getGuildMembers(guildId: string, data: GetGuildMembersData = {}): Promise<Array<import("discord-typings").MemberData>> {
-        return this.requestHandler.request(Endpoints.GUILD_MEMBERS(guildId), "get", "json", data);
+    public async getGuildMembers(guildId: string, data: RESTGetAPIGuildMembersQuery = {}): Promise<RESTGetAPIGuildMembersResult> {
+        return this.requestHandler.request(Routes.guildMembers(guildId), "get", "json", data);
     }
 
     /**
@@ -154,8 +171,8 @@ class GuildMethods {
      * @param options query data
      * @returns list of [guild members](https://discord.com/developers/docs/resources/guild#guild-member-object-guild-member-structure)
      */
-    public async searchGuildMembers(guildId: string, options: { query?: string; limit?: number; }): Promise<Array<import("discord-typings").MemberData>> {
-        return this.requestHandler.request(Endpoints.GUILD_MEMBERS_SEARCH(guildId), "get", "json", options);
+    public async searchGuildMembers(guildId: string, options: RESTGetAPIGuildMembersSearchQuery): Promise<RESTGetAPIGuildMembersSearchResult> {
+        return this.requestHandler.request(Routes.guildMembersSearch(guildId), "get", "json", options);
     }
 
     /**
@@ -187,8 +204,8 @@ class GuildMethods {
      * }
      * client.guild.addGuildMember('guildId', 'memberId', memberData)
      */
-    public async addGuildMember(guildId: string, memberId: string, data: AddGuildMemberData): Promise<import("discord-typings").MemberData> {
-        return this.requestHandler.request(Endpoints.GUILD_MEMBER(guildId, memberId), "put", "json", data);
+    public async addGuildMember(guildId: string, memberId: string, data: RESTPutAPIGuildMemberJSONBody): Promise<APIGuildMember> {
+        return this.requestHandler.request(Routes.guildMember(guildId, memberId), "put", "json", data);
     }
 
     /**
@@ -218,8 +235,8 @@ class GuildMethods {
      * }
      * client.guild.updateGuildMember('guild Id', 'memberId', memberData)
      */
-    public async updateGuildMember(guildId: string, memberId: string, data: UpdateGuildMemberData): Promise<void> {
-        return this.requestHandler.request(Endpoints.GUILD_MEMBER(guildId, memberId), "patch", "json", data);
+    public async updateGuildMember(guildId: string, memberId: string, data: RESTPatchAPIGuildMemberJSONBody): Promise<void> {
+        return this.requestHandler.request(Routes.guildMember(guildId, memberId), "patch", "json", data);
     }
 
     /**
@@ -241,7 +258,7 @@ class GuildMethods {
      * client.guild.updateSelf('guildId', nickData)
      */
     public async updateSelf(guildId: string, data: { nick: string; }): Promise<void> {
-        return this.requestHandler.request(Endpoints.GUILD_MEMBER_NICK(guildId, "@me"), "patch", "json", data);
+        return this.requestHandler.request(Routes.guildCurrentMemberNickname(guildId), "patch", "json", data);
     }
 
     /**
@@ -257,7 +274,7 @@ class GuildMethods {
      * | MANAGE_ROLES       | always    |
      */
     public async addGuildMemberRole(guildId: string, memberId: string, roleId: string, data?: { reason?: string; }): Promise<void> {
-        return this.requestHandler.request(Endpoints.GUILD_MEMBER_ROLE(guildId, memberId, roleId), "put", "json", data);
+        return this.requestHandler.request(Routes.guildMemberRole(guildId, memberId, roleId), "put", "json", data);
     }
 
     /**
@@ -273,7 +290,7 @@ class GuildMethods {
      * | MANAGE_ROLES       | always    |
      */
     public async removeGuildMemberRole(guildId: string, memberId: string, roleId: string, data?: { reason?: string; }): Promise<void> {
-        return this.requestHandler.request(Endpoints.GUILD_MEMBER_ROLE(guildId, memberId, roleId), "delete", "json", data);
+        return this.requestHandler.request(Routes.guildMemberRole(guildId, memberId, roleId), "delete", "json", data);
     }
 
     /**
@@ -296,7 +313,7 @@ class GuildMethods {
      * client.guild.removeGuildMember('guild Id', 'memberId', kickData)
      */
     public async removeGuildMember(guildId: string, memberId: string, data?: { reason?: string; }): Promise<void> {
-        return this.requestHandler.request(Endpoints.GUILD_MEMBER(guildId, memberId), "delete", "json", data);
+        return this.requestHandler.request(Routes.guildMember(guildId, memberId), "delete", "json", data);
     }
 
     /**
@@ -308,8 +325,8 @@ class GuildMethods {
      * |--------------------|-----------|
      * | BAN_MEMBERS        | always    |
      */
-    public async getGuildBans(guildId: string): Promise<Array<any>> {
-        return this.requestHandler.request(Endpoints.GUILD_BANS(guildId), "get", "json");
+    public async getGuildBans(guildId: string): Promise<RESTGetAPIGuildBansResult> {
+        return this.requestHandler.request(Routes.guildBans(guildId), "get", "json");
     }
 
     /**
@@ -333,7 +350,7 @@ class GuildMethods {
      * client.guild.createGuildBan('guild Id', 'memberId', banData)
      */
     public async createGuildBan(guildId: string, memberId: string, data?: { reason?: string; delete_message_days?: number; }): Promise<void> {
-        return this.requestHandler.request(Endpoints.GUILD_BAN(guildId, memberId), "put", "json", data);
+        return this.requestHandler.request(Routes.guildBan(guildId, memberId), "put", "json", data);
     }
 
 
@@ -357,7 +374,7 @@ class GuildMethods {
      * client.guild.createGuildTimeout('guild Id', 'memberId', timeoutData)
      */
     public async createGuildTimeout(guildId: string, memberId: string, data: { reason?: string, communication_disabled_until?: string; }): Promise<void> {
-        return this.requestHandler.request(Endpoints.GUILD_MEMBER(guildId, memberId), "patch", "json", data);
+        return this.requestHandler.request(Routes.guildMember(guildId, memberId), "patch", "json", data);
     }
 
     /**
@@ -372,7 +389,7 @@ class GuildMethods {
      * | BAN_MEMBERS        | always    |
      */
     public async removeGuildBan(guildId: string, memberId: string, data?: { reason?: string; }): Promise<void> {
-        return this.requestHandler.request(Endpoints.GUILD_BAN(guildId, memberId), "delete", "json", data);
+        return this.requestHandler.request(Routes.guildBan(guildId, memberId), "delete", "json", data);
     }
 
     /**
@@ -384,8 +401,8 @@ class GuildMethods {
      * |--------------------|-----------|
      * | MANAGE_ROLES       | always    |
      */
-    public async getGuildRoles(guildId: string): Promise<Array<import("discord-typings").RoleData>> {
-        return this.requestHandler.request(Endpoints.GUILD_ROLES(guildId), "get", "json");
+    public async getGuildRoles(guildId: string): Promise<RESTGetAPIGuildRolesResult> {
+        return this.requestHandler.request(Routes.guildRoles(guildId), "get", "json");
     }
 
     /**
@@ -407,8 +424,8 @@ class GuildMethods {
      * }
      * client.guild.createGuildRole('guild Id', roleData)
      */
-    public async createGuildRole(guildId: string, data?: RoleOptions): Promise<import("discord-typings").RoleData> {
-        return this.requestHandler.request(Endpoints.GUILD_ROLES(guildId), "post", "json", data);
+    public async createGuildRole(guildId: string, data?: RESTPostAPIGuildRoleJSONBody): Promise<RESTPostAPIGuildRoleResult> {
+        return this.requestHandler.request(Routes.guildRoles(guildId), "post", "json", data);
     }
 
     /**
@@ -421,8 +438,8 @@ class GuildMethods {
      * |--------------------|-----------|
      * | MANAGE_ROLES       | always    |
      */
-    public async updateGuildRolePositions(guildId: string, data: { id: string; position?: number | null; reason?: string; } | Array<{ id: string; position?: number | null; reason?: string; }>): Promise<Array<import("discord-typings").RoleData>> {
-        return this.requestHandler.request(Endpoints.GUILD_ROLES(guildId), Array.isArray(data) ? "put" : "patch", "json", data);
+    public async updateGuildRolePositions(guildId: string, data: { id: string; position?: number | null; reason?: string; } | Array<{ id: string; position?: number | null; reason?: string; }>): Promise<RESTPatchAPIGuildRolePositionsResult> {
+        return this.requestHandler.request(Routes.guildRoles(guildId), Array.isArray(data) ? "put" : "patch", "json", data);
     }
 
     /**
@@ -436,8 +453,8 @@ class GuildMethods {
      * |--------------------|-----------|
      * | MANAGE_ROLES       | always    |
      */
-    public async updateGuildRole(guildId: string, roleId: string, data: RoleOptions): Promise<import("discord-typings").RoleData> {
-        return this.requestHandler.request(Endpoints.GUILD_ROLE(guildId, roleId), "patch", "json", data);
+    public async updateGuildRole(guildId: string, roleId: string, data: RESTPatchAPIGuildRoleJSONBody): Promise<RESTPatchAPIGuildRoleResult> {
+        return this.requestHandler.request(Routes.guildRole(guildId, roleId), "patch", "json", data);
     }
 
     /**
@@ -451,7 +468,7 @@ class GuildMethods {
      * | MANAGE_ROLES       | always    |
      */
     public async removeGuildRole(guildId: string, roleId: string): Promise<void> {
-        return this.requestHandler.request(Endpoints.GUILD_ROLE(guildId, roleId), "delete", "json");
+        return this.requestHandler.request(Routes.guildRole(guildId, roleId), "delete", "json");
     }
 
     /**
@@ -464,8 +481,8 @@ class GuildMethods {
      * |--------------------|-----------|
      * | KICK_MEMBERS       | always    |
      */
-    public async getGuildPruneCount(guildId: string, data: { days?: number; include_roles?: string; }): Promise<{ pruned: number; }> {
-        return this.requestHandler.request(Endpoints.GUILD_PRUNE(guildId), "get", "json", data);
+    public async getGuildPruneCount(guildId: string, data: RESTGetAPIGuildPruneCountQuery): Promise<RESTGetAPIGuildPruneCountResult> {
+        return this.requestHandler.request(Routes.guildPrune(guildId), "get", "json", data);
     }
 
     /**
@@ -478,8 +495,8 @@ class GuildMethods {
      * |--------------------|-----------|
      * | KICK_MEMBERS       | always    |
      */
-    public async startGuildPrune(guildId: string, data: { days?: number; compute_prune_count?: boolean; include_roles?: Array<string>; reason?: string; }): Promise<{ pruned: number; }> {
-        return this.requestHandler.request(Endpoints.GUILD_PRUNE(guildId), "post", "json", data);
+    public async startGuildPrune(guildId: string, data: RESTPostAPIGuildPruneJSONBody): Promise<RESTPostAPIGuildPruneResult> {
+        return this.requestHandler.request(Routes.guildPrune(guildId), "post", "json", data);
     }
 
     /**
@@ -487,8 +504,8 @@ class GuildMethods {
      * @param guildId Id of the guild
      * @returns List of [voice regions](https://discord.com/developers/docs/resources/voice#voice-region-object)
      */
-    public async getGuildVoiceRegions(guildId: string): Promise<Array<any>> {
-        return this.requestHandler.request(Endpoints.GUILD_VOICE_REGIONS(guildId), "get", "json");
+    public async getGuildVoiceRegions(guildId: string): Promise<RESTGetAPIGuildVoiceRegionsResult> {
+        return this.requestHandler.request(Routes.guildVoiceRegions(guildId), "get", "json");
     }
 
     /**
@@ -500,8 +517,8 @@ class GuildMethods {
      * |--------------------|-----------|
      * | MANAGE_GUILD       | always    |
      */
-    public async getGuildInvites(guildId: string): Promise<Array<any>> {
-        return this.requestHandler.request(Endpoints.GUILD_INVITES(guildId), "get", "json");
+    public async getGuildInvites(guildId: string): Promise<RESTGetAPIGuildInvitesResult> {
+        return this.requestHandler.request(Routes.guildInvites(guildId), "get", "json");
     }
 
     /**
@@ -513,8 +530,8 @@ class GuildMethods {
      * |--------------------|-----------|
      * | MANAGE_GUILD       | always    |
      */
-    public async getGuildIntegrations(guildId: string): Promise<Array<any>> {
-        return this.requestHandler.request(Endpoints.GUILD_INTEGRATIONS(guildId), "get", "json");
+    public async getGuildIntegrations(guildId: string): Promise<RESTGetAPIGuildIntegrationsResult> {
+        return this.requestHandler.request(Routes.guildIntegrations(guildId), "get", "json");
     }
 
     /**
@@ -528,7 +545,7 @@ class GuildMethods {
      * | MANAGE_GUILD       | always    |
      */
     public async createGuildIntegration(guildId: string, data: { type: string; id: string; }): Promise<void> {
-        return this.requestHandler.request(Endpoints.GUILD_INTEGRATIONS(guildId), "post", "json", data);
+        return this.requestHandler.request(Routes.guildIntegrations(guildId), "post", "json", data);
     }
 
     /**
@@ -542,7 +559,7 @@ class GuildMethods {
      * | MANAGE_GUILD       | always    |
      */
     public async updateGuildIntegration(guildId: string, integrationId: string, data: { expire_behavior: number; expire_grace_period: number; enable_emoticons: boolean; }): Promise<void> {
-        return this.requestHandler.request(Endpoints.GUILD_INTEGRATION(guildId, integrationId), "patch", "json", data);
+        return this.requestHandler.request(Routes.guildIntegration(guildId, integrationId), "patch", "json", data);
     }
 
     /**
@@ -556,7 +573,7 @@ class GuildMethods {
      * | MANAGE_GUILD       | always    |
      */
     public async removeGuildIntegration(guildId: string, integrationId: string): Promise<void> {
-        return this.requestHandler.request(Endpoints.GUILD_INTEGRATION(guildId, integrationId), "delete", "json");
+        return this.requestHandler.request(Routes.guildIntegration(guildId, integrationId), "delete", "json");
     }
 
     /**
@@ -564,8 +581,8 @@ class GuildMethods {
      * @param guildId Id of the guild
      * @returns [Guild Widget](https://discord.com/developers/docs/resources/guild#guild-widget-object)
      */
-    public async getGuildWidget(guildId: string): Promise<import("discord-typings").GuildWidgetData> {
-        return this.requestHandler.request(Endpoints.GUILD_WIDGET(guildId), "get", "json");
+    public async getGuildWidget(guildId: string): Promise<RESTGetAPIGuildWidgetJSONResult> {
+        return this.requestHandler.request(Routes.guildWidgetJSON(guildId), "get", "json");
     }
 
     /**
@@ -577,8 +594,8 @@ class GuildMethods {
      * |--------------------|-----------|
      * | MANAGE_GUILD       | always    |
      */
-    public async getGuildWidgetSettings(guildId: string): Promise<{ enabled: boolean; channel_id: string; }> {
-        return this.requestHandler.request(Endpoints.GUILD_WIDGET_SETTINGS(guildId), "get", "json");
+    public async getGuildWidgetSettings(guildId: string): Promise<RESTGetAPIGuildWidgetSettingsResult> {
+        return this.requestHandler.request(Routes.guildWidgetSettings(guildId), "get", "json");
     }
 
     /**
@@ -591,8 +608,8 @@ class GuildMethods {
      * |--------------------|-----------|
      * | MANAGE_GUILD       | always    |
      */
-    public async updateGuildWidgetSettings(guildId: string, data: { enabled?: boolean; channel_id?: string; }): Promise<{ enabled: boolean; channel_id: string; }> {
-        return this.requestHandler.request(Endpoints.GUILD_WIDGET_SETTINGS(guildId), "patch", "json", data);
+    public async updateGuildWidgetSettings(guildId: string, data: RESTPatchAPIGuildWidgetSettingsJSONBody): Promise<RESTPatchAPIGuildWidgetSettingsResult> {
+        return this.requestHandler.request(Routes.guildWidgetSettings(guildId), "patch", "json", data);
     }
 
     /**
@@ -604,8 +621,8 @@ class GuildMethods {
      * |--------------------|-----------|
      * | MANAGE_GUILD       | always    |
      */
-    public async getGuildVanityURL(guildId: string): Promise<{ code: string | null; uses: number; }> {
-        return this.requestHandler.request(Endpoints.GUILD_VANITY(guildId), "get", "json");
+    public async getGuildVanityURL(guildId: string): Promise<RESTGetAPIGuildVanityUrlResult> {
+        return this.requestHandler.request(Routes.guildVanityUrl(guildId), "get", "json");
     }
 
     /**
@@ -613,8 +630,8 @@ class GuildMethods {
      * @param guildId Id of the guild
      * @returns [Guild Welcome Screen](https://discord.com/developers/docs/resources/guild#welcome-screen-object)
      */
-    public async getGuildWelcomeScreen(guildId: string): Promise<import("discord-typings").WelcomeScreenData> {
-        return this.requestHandler.request(Endpoints.GUILD_WELCOME_SCREEN(guildId), "get", "json");
+    public async getGuildWelcomeScreen(guildId: string): Promise<RESTGetAPIGuildWelcomeScreenResult> {
+        return this.requestHandler.request(Routes.guildWelcomeScreen(guildId), "get", "json");
     }
 
     /**
@@ -627,8 +644,8 @@ class GuildMethods {
      * |--------------------|-----------|
      * | MANAGE_GUILD       | always    |
      */
-    public async editGuildWelcomeScreen(guildId: string, data: Partial<import("discord-typings").WelcomeScreenData> & { enabled?: boolean; }) {
-        return this.requestHandler.request(Endpoints.GUILD_WELCOME_SCREEN(guildId), "patch", "json", data);
+    public async editGuildWelcomeScreen(guildId: string, data: RESTPatchAPIGuildWelcomeScreenJSONBody): Promise<APIGuildWelcomeScreen> {
+        return this.requestHandler.request(Routes.guildWelcomeScreen(guildId), "patch", "json", data);
     }
 
     /**
@@ -642,8 +659,8 @@ class GuildMethods {
      * | MUTE_MEMBERS       | when trying to un-suppress yourself |
      * | REQUEST_TO_SPEAK   | when trying to request to speak     |
      */
-    public updateCurrentUserVoiceState(guildId: string, data: { channel_id: string; suppress?: boolean; request_to_speak_timestamp: string | null; }): Promise<void> {
-        return this.requestHandler.request(Endpoints.GUILD_VOICE_STATE_USER(guildId, "@me"), "patch", "json", data);
+    public updateCurrentUserVoiceState(guildId: string, data: RESTPatchAPIGuildVoiceStateCurrentMemberJSONBody): Promise<void> {
+        return this.requestHandler.request(Routes.guildVoiceState(guildId, "@me"), "patch", "json", data);
     }
 
     /**
@@ -656,170 +673,9 @@ class GuildMethods {
      * |--------------------|-------------------------------------|
      * | MUTE_MEMBERS       | when trying to suppress/un-suppress |
      */
-    public updateUserVoiceState(guildId: string, userId: string, data: { channel_id: string; suppress?: boolean; }): Promise<void> {
-        return this.requestHandler.request(Endpoints.GUILD_VOICE_STATE_USER(guildId, userId), "patch", "json", data);
+    public updateUserVoiceState(guildId: string, userId: string, data: RESTPatchAPIGuildVoiceStateUserJSONBody): Promise<void> {
+        return this.requestHandler.request(Routes.guildVoiceState(guildId, userId), "patch", "json", data);
     }
 }
 
-// Please end my suffering (ft. Papi)
-
-interface CreateGuildData {
-    /**
-     * name of the guild
-     */
-    name: string;
-    /**
-     * base64 encoded jpeg icon to use for the guild
-     */
-    icon?: string;
-    /**
-     * guild [verification level](https://discord.com/developers/docs/resources/guild#guild-object-verification-level)
-     */
-    verification_level?: 0 | 1 | 2 | 3 | 4;
-    /**
-     * default message [notification setting](https://discord.com/developers/docs/resources/guild#default-message-notification-level)
-     */
-    default_message_notifications?: 0 | 1;
-    /**
-     * array of [channels](https://discord.com/developers/docs/resources/channel#channel-object-channel-structure)
-     */
-    channels?: Array<Partial<Exclude<import("discord-typings").GuildChannelData, "id">>>;
-    /**
-     * array of [roles](https://discord.com/developers/docs/resources/channel#channel-object-channel-structure)
-     */
-    roles?: Array<Partial<Exclude<import("discord-typings").RoleData, "id">>>;
-    afk_channel_id?: string;
-    /**
-     * afk timeout in seconds
-     */
-    afk_timeout?: number;
-    system_channel_id?: string;
-    system_channel_flags?: number;
-}
-
-interface UpdateGuildData {
-    /**
-     * name of the guild
-     */
-    name?: string;
-    /**
-     * guild [verification level](https://discord.com/developers/docs/resources/guild#guild-object-verification-level)
-     */
-    verification_level?: number | null;
-    /**
-     * message [notification setting](https://discord.com/developers/docs/resources/guild#default-message-notification-level)
-     */
-    default_message_notifications?: number | null;
-    explicit_content_filter?: number | null;
-    /**
-     * Id of the afk channel
-     */
-    afk_channel_id?: string | null;
-    /**
-     * afk timeout in seconds
-     */
-    afk_timeout?: number;
-    /**
-     * base64 jpeg image of the guild icon
-     */
-    icon?: string | null;
-    /**
-     * Id of the owner user
-     */
-    owner_id?: string;
-    /**
-     * base64 jpeg image for the guild splash
-     */
-    splash?: string | null;
-    /**
-     * reason for updating the guild
-     */
-    reason?: string;
-    discovery_splash?: string | null;
-    banner?: string | null;
-    system_channel_id?: string | null;
-    system_channel_flags?: number;
-    rules_channel_id?: string | null;
-    public_updates_channel_id?: string | null;
-    preferred_locale?: string | null;
-    features?: Array<import("discord-typings").GuildFeature>;
-    description?: string | null;
-}
-
-interface CreateGuildChannelData {
-    /**
-     * name of the channel
-     */
-    name: string;
-    /**
-     * [type](https://discord.com/developers/docs/resources/channel#channel-object-channel-types) of the channel
-     */
-    type?: number;
-    topic?: string;
-    /**
-     * bitrate of the channel (voice only)
-     */
-    bitrate?: number;
-    /**
-     * user limit of a channel (voice only)
-     */
-    user_limit?: number;
-    rate_limit_per_user?: number;
-    position?: number;
-    /**
-     * permissions overwrites for the channel
-     */
-    permission_overwrites?: Array<any>;
-    parent_id?: string;
-    nsfw?: boolean;
-    reason?: string;
-}
-
-interface AddGuildMemberData {
-    /**
-     * oauth2 access token with a `guilds.join` scope enabled
-     */
-    access_token: string;
-    /**
-     * nickname of the new member
-     */
-    nick?: string;
-    /**
-     * Array of Role Ids the new member should have
-     */
-    roles?: Array<string>;
-    /**
-     * if the new member should be muted
-     */
-    mute?: boolean;
-    /**
-     * if the new member is deaf
-     */
-    deaf?: boolean;
-}
-
-interface UpdateGuildMemberData {
-    nick?: string;
-    roles?: Array<string>;
-    mute?: boolean;
-    deaf?: boolean;
-    channel_id?: string | null;
-}
-
-interface GetGuildMembersData {
-    limit?: number;
-    after?: string;
-}
-
-interface RoleOptions {
-    name?: string;
-    permissions?: number;
-    color?: number;
-    hoist?: boolean;
-    icon?: string | null;
-    unicode_emoji?: string | null;
-    mentionable?: boolean;
-}
-
-// those moves https://youtu.be/oCrwzN6eb4Q?t=51s nice
 export = GuildMethods;

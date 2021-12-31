@@ -1,4 +1,13 @@
-import Endpoints from "../Endpoints";
+import type {
+    APIUser, RESTGetAPIChannelMessagesQuery, RESTGetAPIChannelThreadMembersResult,
+    RESTPatchAPIChannelJSONBody, RESTPatchAPIChannelMessageJSONBody, RESTPostAPIChannelInviteJSONBody,
+    RESTPostAPIChannelMessageJSONBody, RESTPostAPIChannelThreadsResult, RESTPutAPIChannelPermissionJSONBody,
+    RESTGetAPIChannelResult, RESTPatchAPIChannelResult, RESTDeleteAPIChannelResult, RESTGetAPIChannelMessagesResult,
+    RESTPostAPIChannelMessageResult, RESTPostAPIChannelMessageCrosspostResult, RESTPatchAPIChannelMessageResult,
+    Snowflake, RESTGetAPIChannelInvitesResult, RESTPostAPIChannelInviteResult, RESTGetAPIChannelPinsResult,
+    RESTGetAPIChannelUsersThreadsArchivedResult, RESTGetAPIChannelThreadsArchivedQuery
+} from "discord-api-types";
+import { Routes } from "../Endpoints";
 import Constants from "../Constants";
 
 /**
@@ -35,8 +44,8 @@ class ChannelMethods {
      * let client = new SnowTransfer('TOKEN')
      * let channel = await client.channel.getChannel('channel id')
      */
-    public async getChannel(channelId: string): Promise<import("discord-typings").ChannelData> {
-        return this.requestHandler.request(Endpoints.CHANNEL(channelId), "get", "json");
+    public async getChannel(channelId: string): Promise<RESTGetAPIChannelResult> {
+        return this.requestHandler.request(Routes.channel(channelId), "get", "json");
     }
 
     /**
@@ -60,8 +69,8 @@ class ChannelMethods {
      * }
      * client.channel.updateChannel('channel id', updateData)
      */
-    public async updateChannel(channelId: string, data: EditChannelData): Promise<import("discord-typings").ChannelData> {
-        return this.requestHandler.request(Endpoints.CHANNEL(channelId), "patch", "json", data);
+    public async updateChannel(channelId: string, data: RESTPatchAPIChannelJSONBody): Promise<RESTPatchAPIChannelResult> {
+        return this.requestHandler.request(Routes.channel(channelId), "patch", "json", data);
     }
 
     /**
@@ -82,8 +91,8 @@ class ChannelMethods {
      * | MANAGE_CHANNELS    | When deleting a Guild Channel   |
      * | MANAGE_THREADS     | When channelId is a Thread's Id |
      */
-    public async deleteChannel(channelId: string, reason?: string): Promise<import("discord-typings").ChannelData> {
-        return this.requestHandler.request(Endpoints.CHANNEL(channelId), "delete", "json", reason ? { reason } : undefined);
+    public async deleteChannel(channelId: string, reason?: string): Promise<RESTDeleteAPIChannelResult> {
+        return this.requestHandler.request(Routes.channel(channelId), "delete", "json", reason ? { reason } : undefined);
     }
 
     /**
@@ -104,7 +113,7 @@ class ChannelMethods {
      * }
      * let messages = await client.channel.getChannelMessages('channel id', options);
      */
-    public async getChannelMessages(channelId: string, options: GetMessageOptions = { limit: 50 }): Promise<Array<import("discord-typings").MessageData>> {
+    public async getChannelMessages(channelId: string, options: RESTGetAPIChannelMessagesQuery = { limit: 50 }): Promise<RESTGetAPIChannelMessagesResult> {
         if (options.around) {
             delete options.before;
             delete options.after;
@@ -118,7 +127,7 @@ class ChannelMethods {
         if (options.limit && options.limit > Constants.GET_CHANNEL_MESSAGES_MAX_RESULTS) {
             throw new Error(`The maximum amount of messages that may be requested is ${Constants.GET_CHANNEL_MESSAGES_MAX_RESULTS}`);
         }
-        return this.requestHandler.request(Endpoints.CHANNEL_MESSAGES(channelId), "get", "json", options);
+        return this.requestHandler.request(Routes.channelMessages(channelId), "get", "json", options);
     }
 
     /**
@@ -137,8 +146,8 @@ class ChannelMethods {
      * let client = new SnowTransfer('TOKEN')
      * let message = await client.channel.getChannelMessage('channel id', 'message id')
      */
-    public async getChannelMessage(channelId: string, messageId: string): Promise<import("discord-typings").MessageData> {
-        return this.requestHandler.request(Endpoints.CHANNEL_MESSAGE(channelId, messageId), "get", "json");
+    public async getChannelMessage(channelId: string, messageId: string): Promise<RESTGetAPIChannelMessagesResult> {
+        return this.requestHandler.request(Routes.channelMessage(channelId, messageId), "get", "json");
     }
 
     /**
@@ -181,7 +190,7 @@ class ChannelMethods {
      * let fileData = fs.readFileSync('nice_picture.png') // You should probably use fs.readFile, since it's asynchronous, synchronous methods may lag your bot.
      * client.channel.createMessage('channel id', {content: 'This is a nice picture', files: [{name: 'Optional Filename.png', file: fileData}]})
      */
-    public async createMessage(channelId: string, data: string | CreateMessageData, options: { disableEveryone?: boolean; } = { disableEveryone: this.disableEveryone }): Promise<import("discord-typings").MessageData> {
+    public async createMessage(channelId: string, data: string | CreateMessageData, options: { disableEveryone?: boolean; } = { disableEveryone: this.disableEveryone }): Promise<RESTPostAPIChannelMessageResult> {
         if (typeof data !== "string" && !data.content && !data.embeds && !data.files) {
             throw new Error("Missing content or embeds or files");
         }
@@ -194,8 +203,8 @@ class ChannelMethods {
             data.content = data.content.replace(/@([^<>@ ]*)/gsmu, replaceEveryone);
         }
 
-        if (data.files) return this.requestHandler.request(Endpoints.CHANNEL_MESSAGES(channelId), "post", "multipart", data);
-        else return this.requestHandler.request(Endpoints.CHANNEL_MESSAGES(channelId), "post", "json", data);
+        if (data.files) return this.requestHandler.request(Routes.channelMessages(channelId), "post", "multipart", data);
+        else return this.requestHandler.request(Routes.channelMessages(channelId), "post", "json", data);
     }
 
     /**
@@ -211,8 +220,8 @@ class ChannelMethods {
      * | SEND_MESSAGES_IN_THREADS | if the message was sent by the current user and is in a thread channel  |
      * | MANAGE_MESSAGES          | if the message wasn't sent by the current user                          |
      */
-    public async crosspostMessage(channelId: string, messageId: string): Promise<import("discord-typings").MessageData> {
-        return this.requestHandler.request(Endpoints.CHANNEL_MESSAGE_CROSSPOST(channelId, messageId), "post", "json");
+    public async crosspostMessage(channelId: string, messageId: string): Promise<RESTPostAPIChannelMessageCrosspostResult> {
+        return this.requestHandler.request(Routes.channelMessageCrosspost(channelId, messageId), "post", "json");
     }
 
     /**
@@ -234,7 +243,7 @@ class ChannelMethods {
      * let message = await client.channel.createMessage('channel id', 'pong')
      * client.channel.editMessage('channel id', message.id, `pong ${Date.now() - time}ms`)
      */
-    public async editMessage(channelId: string, messageId: string, data: string | EditMessageData, options: { disableEveryone?: boolean; } = { disableEveryone: this.disableEveryone }): Promise<import("discord-typings").MessageData> {
+    public async editMessage(channelId: string, messageId: string, data: string | EditMessageData, options: { disableEveryone?: boolean; } = { disableEveryone: this.disableEveryone }): Promise<RESTPatchAPIChannelMessageResult> {
         if (typeof data !== "string" && data.content === undefined && data.embeds === undefined && data.files === undefined) {
             throw new Error("Missing content or embeds or files");
         }
@@ -247,8 +256,8 @@ class ChannelMethods {
             data.content = data.content.replace(/@([^<>@ ]*)/gsmu, replaceEveryone);
         }
 
-        if (data.files) return this.requestHandler.request(Endpoints.CHANNEL_MESSAGE(channelId, messageId), "patch", "multipart", data);
-        else return this.requestHandler.request(Endpoints.CHANNEL_MESSAGE(channelId, messageId), "patch", "json", data);
+        if (data.files) return this.requestHandler.request(Routes.channelMessage(channelId, messageId), "patch", "multipart", data);
+        else return this.requestHandler.request(Routes.channelMessage(channelId, messageId), "patch", "json", data);
     }
 
     /**
@@ -269,7 +278,7 @@ class ChannelMethods {
      * client.channel.deleteMessage('channel id', 'message id')
      */
     public async deleteMessage(channelId: string, messageId: string, reason?: string): Promise<void> {
-        return this.requestHandler.request(Endpoints.CHANNEL_MESSAGE(channelId, messageId), "delete", "json", reason ? { reason } : undefined);
+        return this.requestHandler.request(Routes.channelMessage(channelId, messageId), "delete", "json", reason ? { reason } : undefined);
     }
 
     /**
@@ -284,7 +293,7 @@ class ChannelMethods {
      * | VIEW_CHANNEL       | always    |
      * | MANAGE_MESSAGES    | always    |
      */
-    public async bulkDeleteMessages(channelId: string, messages: Array<string>, reason?: string): Promise<void> {
+    public async bulkDeleteMessages(channelId: string, messages: Snowflake[], reason?: string): Promise<void> {
         if (messages.length < Constants.BULK_DELETE_MESSAGES_MIN || messages.length > Constants.BULK_DELETE_MESSAGES_MAX) {
             throw new Error(`Amount of messages to be deleted has to be between ${Constants.BULK_DELETE_MESSAGES_MIN} and ${Constants.BULK_DELETE_MESSAGES_MAX}`);
         }
@@ -296,7 +305,7 @@ class ChannelMethods {
         }
         const data = { messages };
         if (reason) Object.assign(data, { reason });
-        return this.requestHandler.request(Endpoints.CHANNEL_BULK_DELETE(channelId), "post", "json", data);
+        return this.requestHandler.request(Routes.channelBulkDelete(channelId), "post", "json", data);
     }
 
     /**
@@ -325,7 +334,7 @@ class ChannelMethods {
      * client.channel.createReaction('channel Id', 'message Id', encodeURIComponent('😀'));
      */
     public async createReaction(channelId: string, messageId: string, emoji: string): Promise<void> {
-        return this.requestHandler.request(Endpoints.CHANNEL_MESSAGE_REACTION_USER(channelId, messageId, emoji, "@me"), "put", "json");
+        return this.requestHandler.request(Routes.channelMessageOwnReaction(channelId, messageId, encodeURIComponent(emoji)), "put", "json");
     }
 
     /**
@@ -351,7 +360,7 @@ class ChannelMethods {
      * client.channel.deleteReactionSelf('channel Id', 'message Id', encodeURIComponent('😀'));
      */
     public async deleteReactionSelf(channelId: string, messageId: string, emoji: string): Promise<void> {
-        return this.requestHandler.request(Endpoints.CHANNEL_MESSAGE_REACTION_USER(channelId, messageId, emoji, "@me"), "delete", "json");
+        return this.requestHandler.request(Routes.channelMessageOwnReaction(channelId, messageId, encodeURIComponent(emoji)), "delete", "json");
     }
 
     /**
@@ -380,8 +389,8 @@ class ChannelMethods {
      * client.channel.deleteReaction('channel Id', 'message Id', encodeURIComponent('😀'), 'user Id');
      */
     public async deleteReaction(channelId: string, messageId: string, emoji: string, userId?: string): Promise<void> {
-        if (!userId) return this.requestHandler.request(Endpoints.CHANNEL_MESSAGE_REACTION(channelId, messageId, emoji), "delete", "json");
-        return this.requestHandler.request(Endpoints.CHANNEL_MESSAGE_REACTION_USER(channelId, messageId, emoji, userId), "delete", "json");
+        if (!userId) return this.requestHandler.request(Routes.channelMessageReaction(channelId, messageId, encodeURIComponent(emoji)), "delete", "json");
+        return this.requestHandler.request(Routes.channelMessageUserReaction(channelId, messageId, encodeURIComponent(emoji), userId), "delete", "json");
     }
 
     /**
@@ -401,8 +410,8 @@ class ChannelMethods {
      * let client = new SnowTransfer('TOKEN');
      * let reactions = await client.channel.getReactions('channel Id', 'message Id', encodeURIComponent(':awooo:322522663304036352'));
      */
-    public async getReactions(channelId: string, messageId: string, emoji: string): Promise<Array<import("discord-typings").UserData>> {
-        return this.requestHandler.request(Endpoints.CHANNEL_MESSAGE_REACTION(channelId, messageId, emoji), "get", "json");
+    public async getReactions(channelId: string, messageId: string, emoji: string): Promise<APIUser[]> {
+        return this.requestHandler.request(Routes.channelMessageReaction(channelId, messageId, encodeURIComponent(emoji)), "get", "json");
     }
 
     /**
@@ -418,7 +427,7 @@ class ChannelMethods {
      * | MANAGE_MESSAGES      | always    |
      */
     public async deleteAllReactions(channelId: string, messageId: string): Promise<void> {
-        return this.requestHandler.request(Endpoints.CHANNEL_MESSAGE_REACTIONS(channelId, messageId), "delete", "json");
+        return this.requestHandler.request(Routes.channelMessageAllReactions(channelId, messageId), "delete", "json");
     }
 
     /**
@@ -435,8 +444,8 @@ class ChannelMethods {
      * | MANAGE_ROLES       | always                     |
      * | VIEW_CHANNEL       | always                     |
      */
-    public async editChannelPermission(channelId: string, permissionId: string, data: Partial<import("discord-typings").PermissionOverwriteData> & { reason?: string; }): Promise<void> {
-        return this.requestHandler.request(Endpoints.CHANNEL_PERMISSION(channelId, permissionId), "put", "json", data);
+    public async editChannelPermission(channelId: string, permissionId: string, data: Partial<RESTPutAPIChannelPermissionJSONBody>): Promise<void> {
+        return this.requestHandler.request(Routes.channelPermission(channelId, permissionId), "put", "json", data);
     }
 
     /**
@@ -454,7 +463,7 @@ class ChannelMethods {
      * | VIEW_CHANNEL       | always                     |
      */
     public async deleteChannelPermission(channelId: string, permissionId: string, reason?: string): Promise<void> {
-        return this.requestHandler.request(Endpoints.CHANNEL_PERMISSION(channelId, permissionId), "delete", "json", reason ? { reason } : undefined);
+        return this.requestHandler.request(Routes.channelPermission(channelId, permissionId), "delete", "json", reason ? { reason } : undefined);
     }
 
     /**
@@ -467,8 +476,8 @@ class ChannelMethods {
      * | VIEW_CHANNEL       | always    |
      * | MANAGE_CHANNELS    | always    |
      */
-    public async getChannelInvites(channelId: string): Promise<Array<import("discord-typings").InviteData>> {
-        return this.requestHandler.request(Endpoints.CHANNEL_INVITES(channelId), "get", "json");
+    public async getChannelInvites(channelId: string): Promise<RESTGetAPIChannelInvitesResult> {
+        return this.requestHandler.request(Routes.channelInvites(channelId), "get", "json");
     }
 
     /**
@@ -484,8 +493,8 @@ class ChannelMethods {
      * | VIEW_CHANNEL          | always    |
      * | CREATE_INSTANT_INVITE | always    |
      */
-    public async createChannelInvite(channelId: string, data: CreateInviteData = { max_age: 86400, max_uses: 0, temporary: false, unique: false }): Promise<import("discord-typings").InviteData> {
-        return this.requestHandler.request(Endpoints.CHANNEL_INVITES(channelId), "post", "json", data);
+    public async createChannelInvite(channelId: string, data: RESTPostAPIChannelInviteJSONBody = { max_age: 86400, max_uses: 0, temporary: false, unique: false }): Promise<RESTPostAPIChannelInviteResult> {
+        return this.requestHandler.request(Routes.channelInvites(channelId), "post", "json", data);
     }
 
     /**
@@ -502,7 +511,7 @@ class ChannelMethods {
      * | SEND_MESSAGES_IN_THREADS | if channel is a thread       |
      */
     public async startChannelTyping(channelId: string): Promise<void> {
-        return this.requestHandler.request(Endpoints.CHANNEL_TYPING(channelId), "post", "json");
+        return this.requestHandler.request(Routes.channelTyping(channelId), "post", "json");
     }
 
     /**
@@ -515,8 +524,8 @@ class ChannelMethods {
      * | VIEW_CHANNEL         | if channel is not a DM channel |
      * | READ_MESSAGE_HISTORY | if channel is not a DM channel |
      */
-    public async getChannelPinnedMessages(channelId: string): Promise<Array<import("discord-typings").MessageData>> {
-        return this.requestHandler.request(Endpoints.CHANNEL_PINS(channelId), "get", "json");
+    public async getChannelPinnedMessages(channelId: string): Promise<RESTGetAPIChannelPinsResult> {
+        return this.requestHandler.request(Routes.channelPins(channelId), "get", "json");
     }
 
     /**
@@ -533,7 +542,7 @@ class ChannelMethods {
      * | MANAGE_MESSAGES      | if channel is not a DM channel |
      */
     public async addChannelPinnedMessage(channelId: string, messageId: string, reason?: string): Promise<void> {
-        return this.requestHandler.request(Endpoints.CHANNEL_PIN(channelId, messageId), "put", "json", reason ? { reason } : undefined);
+        return this.requestHandler.request(Routes.channelPin(channelId, messageId), "put", "json", reason ? { reason } : undefined);
     }
 
     /**
@@ -550,7 +559,7 @@ class ChannelMethods {
      * | MANAGE_MESSAGES      | if channel is not a DM channel |
      */
     public async removeChannelPinnedMessage(channelId: string, messageId: string, reason?: string): Promise<void> {
-        return this.requestHandler.request(Endpoints.CHANNEL_PIN(channelId, messageId), "delete", "json", reason ? { reason } : undefined);
+        return this.requestHandler.request(Routes.channelPin(channelId, messageId), "delete", "json", reason ? { reason } : undefined);
     }
 
     /**
@@ -565,8 +574,8 @@ class ChannelMethods {
      * | VIEW_CHANNEL          | always    |
      * | CREATE_PUBLIC_THREADS | always    |
      */
-    public async createThreadWithMessage(channelId: string, messageId: string, options: { name: string; auto_archive_duration: 60 | 1440 | 4320 | 10080; reason?: string; }): Promise<import("discord-typings").ThreadChannelData> {
-        return this.requestHandler.request(Endpoints.CHANNEL_MESSAGE_THREADS(channelId, messageId), "post", "json", options);
+    public async createThreadWithMessage(channelId: string, messageId: string, options: { name: string; auto_archive_duration: 60 | 1440 | 4320 | 10080; reason?: string; }): Promise<RESTPostAPIChannelThreadsResult> {
+        return this.requestHandler.request(Routes.threads(channelId, messageId), "post", "json", options);
     }
 
     /**
@@ -581,8 +590,8 @@ class ChannelMethods {
      * | CREATE_PUBLIC_THREADS  | if creating a public thread  |
      * | CREATE_PRIVATE_THREADS | if creating a private thread |
      */
-    public async createThreadWithoutMessage(channelId: string, options: { name: string; auto_archive_duration: 60 | 1440 | 4320 | 10080; type: 10 | 11 | 12; invitable?: boolean; reason?: string; }): Promise<import("discord-typings").ThreadChannelData> {
-        return this.requestHandler.request(Endpoints.CHANNEL_THREADS(channelId), "post", "json", options);
+    public async createThreadWithoutMessage(channelId: string, options: { name: string; auto_archive_duration: 60 | 1440 | 4320 | 10080; type: 10 | 11 | 12; invitable?: boolean; reason?: string; }): Promise<RESTPostAPIChannelThreadsResult> {
+        return this.requestHandler.request(Routes.threads(channelId), "post", "json", options);
     }
 
     /**
@@ -595,7 +604,7 @@ class ChannelMethods {
      * | VIEW_CHANNEL       | always    |
      */
     public async joinThread(channelId: string): Promise<void> {
-        return this.requestHandler.request(Endpoints.CHANNEL_THREAD_MEMBER(channelId, "@me"), "put", "json");
+        return this.requestHandler.request(Routes.threadMembers(channelId, "@me"), "put", "json");
     }
 
     /**
@@ -610,7 +619,7 @@ class ChannelMethods {
      * | SEND_MESSAGES_IN_THREADS    | always    |
      */
     public async addThreadMember(channelId: string, userId: string): Promise<void> {
-        return this.requestHandler.request(Endpoints.CHANNEL_THREAD_MEMBER(channelId, userId), "put", "json");
+        return this.requestHandler.request(Routes.threadMembers(channelId, userId), "put", "json");
     }
 
     /**
@@ -619,7 +628,7 @@ class ChannelMethods {
      * @returns Resolves the Promise on successful execution
      */
     public async leaveThread(channelId: string): Promise<void> {
-        return this.requestHandler.request(Endpoints.CHANNEL_THREAD_MEMBER(channelId, "@me"), "delete", "json");
+        return this.requestHandler.request(Routes.threadMembers(channelId, "@me"), "delete", "json");
     }
 
     /**
@@ -633,7 +642,7 @@ class ChannelMethods {
      * | MANAGE_THREADS     | if the current user is not the creator of the thread |
      */
     public removeThreadMember(channelId: string, userId: string): Promise<void> {
-        return this.requestHandler.request(Endpoints.CHANNEL_THREAD_MEMBER(channelId, userId), "delete", "json");
+        return this.requestHandler.request(Routes.threadMembers(channelId, userId), "delete", "json");
     }
 
     /**
@@ -646,8 +655,8 @@ class ChannelMethods {
      * | VIEW_CHANNEL                 | always    |
      * | GUILD_MEMBERS gateway intent | always    |
      */
-    public async getChannelThreadMembers(channelId: string): Promise<Array<import("discord-typings").ThreadMemberData>> {
-        return this.requestHandler.request(Endpoints.CHANNEL_THREAD_MEMBERS(channelId), "get", "json");
+    public async getChannelThreadMembers(channelId: string): Promise<RESTGetAPIChannelThreadMembersResult> {
+        return this.requestHandler.request(Routes.threadMembers(channelId), "get", "json");
     }
 
     /**
@@ -661,8 +670,8 @@ class ChannelMethods {
      * | CurrentUser added to Thread | if CurrentUser doesn't have MANAGE_THREADS |
      * | MANAGE_THREADS              | if CurrentUser isn't added to Thread       |
      */
-    public async getChannelArchivedPrivateThreads(channelId: string): Promise<Array<import("discord-typings").ThreadChannelData>> {
-        return this.requestHandler.request(Endpoints.CHANNEL_THREADS_ARCHIVED_PRIVATE(channelId), "get", "json");
+    public async getChannelArchivedPrivateThreads(channelId: string, data: RESTGetAPIChannelThreadsArchivedQuery = {}): Promise<RESTGetAPIChannelUsersThreadsArchivedResult> {
+        return this.requestHandler.request(Routes.channelThreads(channelId, "private"), "get", "json", data);
     }
 
     /**
@@ -676,8 +685,8 @@ class ChannelMethods {
      * | CurrentUser added to Thread       | if CurrentUser doesn't have MANAGE_THREADS |
      * | MANAGE_THREADS                    | if CurrentUser isn't added to Thread       |
      */
-    public async getChannelArchivedPrivateThreadsUser(channelId: string): Promise<Array<import("discord-typings").ThreadChannelData>> {
-        return this.requestHandler.request(Endpoints.CHANNEL_THREADS_ARCHIVED_PRIVATE_USER(channelId), "get", "json");
+    public async getChannelArchivedPrivateThreadsUser(channelId: string, data: RESTGetAPIChannelThreadsArchivedQuery = {}): Promise<RESTGetAPIChannelUsersThreadsArchivedResult> {
+        return this.requestHandler.request(Routes.channelJoinedArchivedThreads(channelId), "get", "json", data);
     }
 
     /**
@@ -691,8 +700,8 @@ class ChannelMethods {
      * | CurrentUser added to Thread | if CurrentUser doesn't have MANAGE_THREADS |
      * | MANAGE_THREADS              | if CurrentUser isn't added to Thread       |
      */
-    public async getChannelArchivedPublicThreads(channelId: string): Promise<Array<import("discord-typings").ThreadChannelData>> {
-        return this.requestHandler.request(Endpoints.CHANNEL_THREADS_ARCHIVED_PUBLIC(channelId), "get", "json");
+    public async getChannelArchivedPublicThreads(channelId: string, data: RESTGetAPIChannelThreadsArchivedQuery = {}): Promise<RESTGetAPIChannelUsersThreadsArchivedResult> {
+        return this.requestHandler.request(Routes.channelThreads(channelId, "public"), "get", "json", data);
     }
 }
 
@@ -704,209 +713,22 @@ function replaceEveryone(match: string, target: string) {
     }
 }
 
-interface EditChannelData {
-    /**
-     * New name of the channel
-     */
-    name?: string;
-    /**
-     * New position of the channel
-     */
-    position?: number;
-    /**
-     * New topic of the channel
-     */
-    topic?: string;
-    /**
-     * Update nsfw type of the channel
-     */
-    nsfw?: boolean;
-    /**
-     * Update bitrate of the channel
-     */
-    bitrate?: number;
-    /**
-     * Update the limit of users that are allowed to be in a channel
-     */
-    user_limit?: number;
-    /**
-     * Update the permission overwrites
-     */
-    permission_overwrites?: Array<import("discord-typings").PermissionOverwriteData>;
-    /**
-     * Id of the parent category of the channel
-     */
-    parent_id?: string;
-    /**
-     * Update whether or not a thread is archived
-     */
-    archived?: boolean;
-    /**
-     * Update how long it takes for a thread to become stale and archived automatically
-     */
-    auto_archive_duration?: number;
-    /**
-     * Update whether or not a thread is locked
-     */
-    locked?: boolean;
-    /**
-     * Update if slowmode is enabled and how long slow mode should last
-     */
-    rate_limit_per_user?: number;
-    /**
-     * Reason for updating the channel
-     */
-    reason?: string;
-}
+type NoUndefined<T> = {
+    [P in keyof T]: Exclude<T[P], undefined>
+};
 
-interface GetMessageOptions {
-    /**
-     * Get's messages around the Id of the passed snowflake
-     */
-    around?: string;
-    /**
-     * Get's messages before the Id of the passed snowflake
-     */
-    before?: string;
-    /**
-     * Get's messages after the Id of the passed snowflake
-     */
-    after?: string;
-    /**
-     * Number of messages to get, values between 1-100 allowed
-     */
-    limit?: number;
-}
-
-interface CreateMessageData {
-    /**
-     * Array of [Embeds](https://discord.com/developers/docs/resources/channel#embed-object) to send
-     */
-    embeds?: Array<import("discord-typings").EmbedData>;
-    /**
-     * Content of the message
-     */
-    content?: string | null;
-    /**
-     * "a nonce that can be used for optimistic message sending"
-     */
-    nonce?: string | number;
-    /**
-     * if this message is text-to-speech
-     */
-    tts?: boolean | null;
-    /**
-     * Files that should be uploaded
-     */
-    files?: Array<{
-        /**
-         * Name of the file
-         */
+type CreateMessageData = NoUndefined<RESTPostAPIChannelMessageJSONBody> & {
+    files?: {
         name: string;
-        /**
-         * Buffer with file contents
-         */
         file: Buffer;
-    }>;
-    /**
-     * [Allowed mentions](https://discord.com/developers/docs/resources/channel#allowed-mentions-object) for the message
-     */
-    allowed_mentions?: {
-        parse?: Array<"roles" | "users" | "everyone">;
-        roles?: Array<string>;
-        users?: Array<string>;
-        replied_user?: boolean;
-    };
-    /**
-     * [Reply](https://discord.com/developers/docs/resources/channel#message-reference-object-message-reference-structure) to a message
-     */
-    message_reference?: {
-        message_id?: string;
-        channel_id?: string;
-        guild_id?: string;
-        fail_if_not_exists?: boolean;
-    };
-    /**
-     * [Buttons](https://discord.com/developers/docs/interactions/message-components#component-object) to add to the message
-     */
-    components?: Array<import("discord-typings").MessageComponentData>;
-    sticker_ids?: Array<string>;
-    attachments?: Array<Exclude<import("discord-typings").AttachmentData, "ephemeral" | "proxy_url" | "url" | "size">>;
-}
+    }[];
+};
 
-interface EditMessageData {
-    /**
-     * Content of the message
-     */
-    content?: string | null;
-    /**
-     * Array of [Embeds](https://discord.com/developers/docs/resources/channel#embed-object) to send
-     */
-    embeds?: Array<import("discord-typings").EmbedData>;
-    /**
-     * 1 << 2 to set a message SUPPRESS_EMBEDS
-     */
-    flags?: number;
-    /**
-     * Files that should be updated
-     */
-    files?: Array<{
-        /**
-         * Name of the file
-         */
+type EditMessageData = NoUndefined<RESTPatchAPIChannelMessageJSONBody> & {
+    files?: {
         name: string;
-        /**
-         * Buffer with file contents
-         */
         file: Buffer;
-    }>;
-    /**
-     * [Allowed mentions](https://discord.com/developers/docs/resources/channel#allowed-mentions-object) for the message
-     */
-    allowed_mentions?: {
-        parse?: Array<"roles" | "users" | "everyone">;
-        roles?: Array<string>;
-        users?: Array<string>;
-        replied_user?: boolean;
-    };
-    /**
-     * [Attached files](https://discord.com/developers/docs/resources/channel#attachment-object) to remove or edit descriptions for
-     */
-    attachments?: Array<Exclude<import("discord-typings").AttachmentData, "ephemeral" | "proxy_url" | "url" | "size">>;
-    /**
-     * [Buttons](https://discord.com/developers/docs/interactions/message-components#component-object) to add to the message
-     */
-    components?: Array<import("discord-typings").MessageComponentData>;
-}
-
-interface CreateInviteData {
-    /**
-     * max age of the invite in seconds
-     */
-    max_age?: number;
-    /**
-     * max uses of the invite
-     */
-    max_uses?: number;
-    /**
-     * if this invite only allows temporary membership
-     */
-    temporary?: boolean;
-    /**
-     * does not try to re-use similar invites when true (useful for creating many one-time invites)
-     */
-    unique?: boolean;
-    /**
-     * Reason for creating the invite
-     */
-    reason?: string;
-}
+    }[];
+};
 
 export = ChannelMethods;
-
-
-// Wolke >>
-// https://www.youtube.com/watch?v=LIlZCmETvsY have a weird video to distract yourself from the problems that will come upon ya
-
-// PapiOphidian >>
-// Thanks, Wolke :)

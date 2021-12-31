@@ -1,6 +1,6 @@
 {
   "name": "@slash.js/rest",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Minimalistic Rest client for the Discord Api used on slash.js",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -18,11 +18,13 @@
   },
   "bugs": "https://github.com/slash.js/rest/issues",
   "author": "Drylozu",
-  "contributors": ["MARCROCK22"],
+  "contributors": [
+    "MARCROCK22"
+  ],
   "license": "MIT",
   "dependencies": {
     "centra": "^2.5.0",
-    "discord-typings": "^9.0.4",
+    "discord-api-types": "^0.26.0",
     "form-data": "~4.0.0"
   },
   "devDependencies": {

@@ -1,5 +1,5 @@
 import Constants from "./Constants";
-import Endpoints from "./Endpoints";
+import { Routes } from "./Endpoints";
 import SnowTransfer from "./SnowTransfer";
 
-export { Constants, Endpoints, SnowTransfer };
+export { Constants, Routes as Endpoints, SnowTransfer };

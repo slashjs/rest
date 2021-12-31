@@ -1,4 +1,5 @@
-import Endpoints from "../Endpoints";
+import type { RESTGetAPICurrentUserGuildsQuery, RESTGetAPICurrentUserGuildsResult, RESTGetAPICurrentUserResult, RESTGetAPIUserResult, RESTPatchAPICurrentUserJSONBody, RESTPatchAPICurrentUserResult, RESTPostAPICurrentUserCreateDMChannelResult } from "discord-api-types";
+import { Routes } from "../Endpoints";
 
 /**
  * Methods for interacting with users
@@ -22,8 +23,8 @@ class UserMethods {
      * Get information about current user
      * @returns [user object](https://discord.com/developers/docs/resources/user#user-object)
      */
-    public async getSelf(): Promise<Required<import("discord-typings").UserData>> {
-        return this.requestHandler.request(Endpoints.USER("@me"), "get", "json");
+    public async getSelf(): Promise<RESTGetAPICurrentUserResult> {
+        return this.requestHandler.request(Routes.user(), "get", "json");
     }
 
     /**
@@ -31,8 +32,8 @@ class UserMethods {
      * @param userId Id of the user
      * @returns [user object](https://discord.com/developers/docs/resources/user#user-object)
      */
-    public async getUser(userId: string): Promise<import("discord-typings").UserData> {
-        return this.requestHandler.request(Endpoints.USER(userId), "get", "json");
+    public async getUser(userId: string): Promise<RESTGetAPIUserResult> {
+        return this.requestHandler.request(Routes.user(userId), "get", "json");
     }
 
     /**
@@ -48,16 +49,16 @@ class UserMethods {
      * }
      * client.user.updateSelf(updateData)
      */
-    public async updateSelf(data: { username?: string; avatar?: string; }): Promise<Required<import("discord-typings").UserData>> {
-        return this.requestHandler.request(Endpoints.USER("@me"), "patch", "json", data);
+    public async updateSelf(data: RESTPatchAPICurrentUserJSONBody): Promise<RESTPatchAPICurrentUserResult> {
+        return this.requestHandler.request(Routes.user(), "patch", "json", data);
     }
 
     /**
      * Get guilds of the current user
      * @returns Array of [partial guild objects](https://discord.com/developers/docs/resources/guild#guild-object)
      */
-    public async getGuilds(): Promise<Array<import("discord-typings").GuildData>> {
-        return this.requestHandler.request(Endpoints.USER_GUILDS("@me"), "get", "json");
+    public async getGuilds(options: RESTGetAPICurrentUserGuildsQuery = {}): Promise<RESTGetAPICurrentUserGuildsResult> {
+        return this.requestHandler.request(Routes.userGuilds(), "get", "json", options);
     }
 
     /**
@@ -66,17 +67,7 @@ class UserMethods {
      * @returns Resolves the Promise on successful execution
      */
     public async leaveGuild(guildId: string): Promise<void> {
-        return this.requestHandler.request(Endpoints.USER_GUILD("@me", guildId), "delete", "json");
-    }
-
-    /**
-     * Get direct messages of a user
-     *
-     * **Returns an empty array for bots**
-     * @returns Array of [dm channels](https://discord.com/developers/docs/resources/channel#channel-object)
-     */
-    public async getDirectMessages(): Promise<Array<import("discord-typings").DMChannelData>> {
-        return this.requestHandler.request(Endpoints.USER_CHANNELS("@me"), "get", "json");
+        return this.requestHandler.request(Routes.userGuild(guildId), "delete", "json");
     }
 
     /**
@@ -92,8 +83,8 @@ class UserMethods {
      * let channel = await client.user.createDirectMessageChannel('other user id')
      * client.channel.createMessage(channel.id, 'hi')
      */
-    public async createDirectMessageChannel(userId: string): Promise<import("discord-typings").DMChannelData> {
-        return this.requestHandler.request(Endpoints.USER_CHANNELS("@me"), "post", "json", { recipient_id: userId });
+    public async createDirectMessageChannel(userId: string): Promise<RESTPostAPICurrentUserCreateDMChannelResult> {
+        return this.requestHandler.request(Routes.userChannels(), "post", "json", { recipient_id: userId });
     }
 }
 

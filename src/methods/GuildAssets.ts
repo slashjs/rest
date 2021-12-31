@@ -1,4 +1,10 @@
-import Endpoints from "../Endpoints";
+import type {
+    RESTGetAPIGuildEmojiResult, RESTGetAPIGuildEmojisResult, RESTGetAPIGuildStickerResult,
+    RESTGetAPIGuildStickersResult, RESTGetAPIStickerResult, RESTPatchAPIGuildEmojiJSONBody,
+    RESTPatchAPIGuildEmojiResult, RESTPostAPIGuildEmojiJSONBody, RESTPostAPIGuildEmojiResult,
+    RESTPostAPIGuildStickerFormDataBody, RESTPostAPIGuildStickerResult
+} from "discord-api-types";
+import { Routes } from "../Endpoints";
 
 /**
  * Methods for interacting with emojis
@@ -23,8 +29,8 @@ class GuildAssetsMethods {
      * @param guildId Id of the guild
      * @returns Array of [emoji objects](https://discord.com/developers/docs/resources/emoji#emoji-object)
      */
-    public async getEmojis(guildId: string): Promise<Array<import("discord-typings").EmojiData>> {
-        return this.requestHandler.request(Endpoints.GUILD_EMOJIS(guildId), "get", "json");
+    public async getEmojis(guildId: string): Promise<RESTGetAPIGuildEmojisResult> {
+        return this.requestHandler.request(Routes.guildEmojis(guildId), "get", "json");
     }
 
     /**
@@ -33,8 +39,8 @@ class GuildAssetsMethods {
      * @param emojiId Id of the emoji
      * @returns [Emoji object](https://discord.com/developers/docs/resources/emoji#emoji-object)
      */
-    public async getEmoji(guildId: string, emojiId: string): Promise<import("discord-typings").EmojiData> {
-        return this.requestHandler.request(Endpoints.GUILD_EMOJI(guildId, emojiId), "get", "json");
+    public async getEmoji(guildId: string, emojiId: string): Promise<RESTGetAPIGuildEmojiResult> {
+        return this.requestHandler.request(Routes.guildEmoji(guildId, emojiId), "get", "json");
     }
 
     /**
@@ -57,8 +63,8 @@ class GuildAssetsMethods {
      * }
      * client.guildAssets.createEmoji('guild id', emojiData)
      */
-    public async createEmoji(guildId: string, data: CreateEmojiData): Promise<import("discord-typings").EmojiData> {
-        return this.requestHandler.request(Endpoints.GUILD_EMOJIS(guildId), "post", "json", data);
+    public async createEmoji(guildId: string, data: RESTPostAPIGuildEmojiJSONBody): Promise<RESTPostAPIGuildEmojiResult> {
+        return this.requestHandler.request(Routes.guildEmojis(guildId), "post", "json", data);
     }
 
     /**
@@ -80,8 +86,8 @@ class GuildAssetsMethods {
      * }
      * client.guildAssets.updateEmoji('guild id', 'emoji id', emojiData)
      */
-    public async updateEmoji(guildId: string, emojiId: string, data: { name?: string; roles?: Array<string> | null; reason?: string; }): Promise<import("discord-typings").EmojiData> {
-        return this.requestHandler.request(Endpoints.GUILD_EMOJI(guildId, emojiId), "patch", "json", data);
+    public async updateEmoji(guildId: string, emojiId: string, data: RESTPatchAPIGuildEmojiJSONBody): Promise<RESTPatchAPIGuildEmojiResult> {
+        return this.requestHandler.request(Routes.guildEmoji(guildId, emojiId), "patch", "json", data);
     }
 
     /**
@@ -96,7 +102,7 @@ class GuildAssetsMethods {
      * | MANAGE_EMOJIS_AND_STICKERS | always    |
      */
     public async deleteEmoji(guildId: string, emojiId: string, reason?: string): Promise<void> {
-        return this.requestHandler.request(Endpoints.GUILD_EMOJI(guildId, emojiId), "delete", "json", reason ? { reason } : undefined);
+        return this.requestHandler.request(Routes.guildEmoji(guildId, emojiId), "delete", "json", reason ? { reason } : undefined);
     }
 
     /**
@@ -104,8 +110,8 @@ class GuildAssetsMethods {
      * @param stickerId Id of the sticker
      * @returns [Sticker object](https://discord.com/developers/docs/resources/sticker#sticker-object)
      */
-    public async getSticker(stickerId: string): Promise<import("discord-typings").StickerData> {
-        return this.requestHandler.request(Endpoints.STICKER(stickerId), "get", "json");
+    public async getSticker(stickerId: string): Promise<RESTGetAPIStickerResult> {
+        return this.requestHandler.request(Routes.sticker(stickerId), "get", "json");
     }
 
     /**
@@ -117,8 +123,8 @@ class GuildAssetsMethods {
      * |----------------------------|---------------------------------------------|
      * | MANAGE_EMOJIS_AND_STICKERS | if the CurrentUser desires the `user` field |
      */
-    public async getGuildStickers(guildId: string): Promise<Array<import("discord-typings").StickerData>> {
-        return this.requestHandler.request(Endpoints.GUILD_STICKERS(guildId), "get", "json");
+    public async getGuildStickers(guildId: string): Promise<RESTGetAPIGuildStickersResult> {
+        return this.requestHandler.request(Routes.guildStickers(guildId), "get", "json");
     }
 
     /**
@@ -131,8 +137,8 @@ class GuildAssetsMethods {
      * |----------------------------|---------------------------------------------|
      * | MANAGE_EMOJIS_AND_STICKERS | if the CurrentUser desires the `user` field |
      */
-    public async getGuildSticker(guildId: string, stickerId: string): Promise<import("discord-typings").StickerData> {
-        return this.requestHandler.request(Endpoints.GUILD_STICKER(guildId, stickerId), "get", "json");
+    public async getGuildSticker(guildId: string, stickerId: string): Promise<RESTGetAPIGuildStickerResult> {
+        return this.requestHandler.request(Routes.guildSticker(guildId, stickerId), "get", "json");
     }
 
     /**
@@ -146,8 +152,8 @@ class GuildAssetsMethods {
      * | MANAGE_EMOJIS_AND_STICKERS  | always                                          |
      * | Guild VERIFIED or PARTNERED | If CurrentUser tries to create a LOTTIE sticker |
      */
-    public createGuildSticker(guildId: string, data: CreateStickerData): Promise<import("discord-typings").StickerData> {
-        return this.requestHandler.request(Endpoints.GUILD_STICKERS(guildId), "post", "multipart", data);
+    public createGuildSticker(guildId: string, data: CreateStickerData): Promise<RESTPostAPIGuildStickerResult> {
+        return this.requestHandler.request(Routes.guildStickers(guildId), "post", "multipart", data);
     }
 
     /**
@@ -161,8 +167,8 @@ class GuildAssetsMethods {
      * |----------------------------|-----------|
      * | MANAGE_EMOJIS_AND_STICKERS | always    |
      */
-    public updateGuildSticker(guildId: string, stickerId: string, data: { name?: string; description?: string | null; tags?: string; reason?: string; }): Promise<import("discord-typings").StickerData> {
-        return this.requestHandler.request(Endpoints.GUILD_STICKER(guildId, stickerId), "patch", "json", data);
+    public updateGuildSticker(guildId: string, stickerId: string, data: RESTPatchAPIGuildEmojiJSONBody): Promise<RESTPatchAPIGuildEmojiResult> {
+        return this.requestHandler.request(Routes.guildSticker(guildId, stickerId), "patch", "json", data);
     }
 
     /**
@@ -176,47 +182,13 @@ class GuildAssetsMethods {
      * | MANAGE_EMOJIS_AND_STICKERS | always    |
      */
     public deleteGuildSticker(guildId: string, stickerId: string, reason?: string): Promise<void> {
-        return this.requestHandler.request(Endpoints.GUILD_STICKER(guildId, stickerId), "delete", "json", reason ? { reason } : undefined);
+        return this.requestHandler.request(Routes.guildSticker(guildId, stickerId), "delete", "json", reason ? { reason } : undefined);
     }
 }
 
-interface CreateEmojiData {
-    /**
-     * name of the emoji
-     */
-    name: string;
-    /**
-     * base 64 avatar
-     */
-    image: string;
-    roles: Array<string>;
-    /**
-     * reason for creating the emoji
-     */
-    reason?: string;
-}
-
-interface CreateStickerData {
-    /**
-     * name of the emoji
-     */
-    name: string;
-    /**
-     * description of the sticker (empty or 2-100 characters)
-     */
-    description: string;
-    /**
-     * comma separated autocomplete/suggestion tags for the sticker (max 200 characters)
-     */
-    tags: string;
-    /**
-     * The file contents; Must be a PNG, APNG, or Lottie JSON file; Max 500 KB
-     */
+type CreateStickerData = RESTPostAPIGuildStickerFormDataBody & {
     file: Buffer;
-    /**
-     * reason for creating the sticker
-     */
     reason?: string;
-}
+};
 
 export = GuildAssetsMethods;

@@ -1,4 +1,15 @@
-import Endpoints from "../Endpoints";
+import type {
+    RESTGetAPIChannelWebhooksResult, RESTGetAPIGuildWebhooksResult,
+    RESTGetAPIWebhookResult, RESTGetAPIWebhookWithTokenMessageResult,
+    RESTGetAPIWebhookWithTokenResult, RESTPatchAPIWebhookJSONBody,
+    RESTPatchAPIWebhookResult, RESTPatchAPIWebhookWithTokenJSONBody,
+    RESTPatchAPIWebhookWithTokenMessageJSONBody, RESTPatchAPIWebhookWithTokenMessageResult,
+    RESTPatchAPIWebhookWithTokenResult, RESTPostAPIChannelWebhookJSONBody,
+    RESTPostAPIChannelWebhookResult, RESTPostAPIWebhookWithTokenGitHubQuery, RESTPostAPIWebhookWithTokenJSONBody,
+    RESTPostAPIWebhookWithTokenResult,
+    RESTPostAPIWebhookWithTokenSlackQuery
+} from "discord-api-types";
+import { Routes } from "../Endpoints";
 
 /**
  * Methods for handling webhook interactions
@@ -39,8 +50,8 @@ class WebhookMethods {
      * }
      * client.webhook.createWebhook('channel Id', webhookData);
      */
-    public async createWebhook(channelId: string, data: { name: string; avatar?: string; }): Promise<import("discord-typings").WebhookData> {
-        return this.requestHandler.request(Endpoints.CHANNEL_WEBHOOKS(channelId), "post", "json", data);
+    public async createWebhook(channelId: string, data: RESTPostAPIChannelWebhookJSONBody): Promise<RESTPostAPIChannelWebhookResult> {
+        return this.requestHandler.request(Routes.channelWebhooks(channelId), "post", "json", data);
     }
 
     /**
@@ -57,8 +68,8 @@ class WebhookMethods {
      * let client = new SnowTransfer('TOKEN');
      * client.webhook.getWebhooksChannel('channel Id').then(console.log);
      */
-    public async getWebhooksChannel(channelId: string): Promise<Array<import("discord-typings").WebhookData>> {
-        return this.requestHandler.request(Endpoints.CHANNEL_WEBHOOKS(channelId), "get", "json");
+    public async getWebhooksChannel(channelId: string): Promise<RESTGetAPIChannelWebhooksResult> {
+        return this.requestHandler.request(Routes.channelWebhooks(channelId), "get", "json");
     }
 
     /**
@@ -75,8 +86,8 @@ class WebhookMethods {
      * let client = new SnowTransfer('TOKEN');
      * client.webhook.getWebhooksGuild('guild Id').then(console.log);
      */
-    public async getWebhooksGuild(guildId: string): Promise<Array<import("discord-typings").WebhookData>> {
-        return this.requestHandler.request(Endpoints.GUILD_WEBHOOKS(guildId), "get", "json");
+    public async getWebhooksGuild(guildId: string): Promise<RESTGetAPIGuildWebhooksResult> {
+        return this.requestHandler.request(Routes.guildWebhooks(guildId), "get", "json");
     }
 
     /**
@@ -94,9 +105,10 @@ class WebhookMethods {
      * let client = new SnowTransfer('TOKEN');
      * client.webhook.getWebhook('webhook Id', 'webhook token').then(console.log);
      */
-    public async getWebhook(webhookId: string, token?: string): Promise<import("discord-typings").WebhookData> {
-        if (token) return this.requestHandler.request(Endpoints.WEBHOOK_TOKEN(webhookId, token), "get", "json");
-        return this.requestHandler.request(Endpoints.WEBHOOK(webhookId), "get", "json");
+    public async getWebhook(webhookId: string): Promise<RESTGetAPIWebhookResult>;
+    public async getWebhook(webhookId: string, token: string): Promise<RESTGetAPIWebhookWithTokenResult>;
+    public async getWebhook(webhookId: string, token?: string): Promise<RESTGetAPIWebhookResult | RESTGetAPIWebhookWithTokenResult> {
+        return this.requestHandler.request(Routes.webhook(webhookId, token), "get", "json");
     }
 
     /**
@@ -118,9 +130,10 @@ class WebhookMethods {
      * }
      * client.webhook.updateWebhook('webhook Id', 'webhook token', webhookData);
      */
-    public async updateWebhook(webhookId: string, token: string | undefined, data: { name?: string; avatar?: string; channel_id?: string; }): Promise<import("discord-typings").WebhookData> {
-        if (token) return this.requestHandler.request(Endpoints.WEBHOOK_TOKEN(webhookId, token), "patch", "json", data);
-        return this.requestHandler.request(Endpoints.WEBHOOK(webhookId), "patch", "json", data);
+    public async updateWebhook(webhookId: string, token: undefined, data: RESTPatchAPIWebhookJSONBody): Promise<RESTPatchAPIWebhookResult>;
+    public async updateWebhook(webhookId: string, token: string, data: RESTPatchAPIWebhookWithTokenJSONBody): Promise<RESTPatchAPIWebhookWithTokenResult>;
+    public async updateWebhook(webhookId: string, token: string | undefined, data: RESTPatchAPIWebhookJSONBody | RESTPatchAPIWebhookWithTokenJSONBody): Promise<RESTPatchAPIWebhookResult | RESTPatchAPIWebhookWithTokenJSONBody> {
+        return this.requestHandler.request(Routes.webhook(webhookId, token), "patch", "json", data);
     }
 
     /**
@@ -134,8 +147,7 @@ class WebhookMethods {
      * | MANAGE_WEBHOOKS    | without token |
      */
     public async deleteWebhook(webhookId: string, token?: string): Promise<void> {
-        if (token) return this.requestHandler.request(Endpoints.WEBHOOK_TOKEN(webhookId, token), "delete", "json");
-        return this.requestHandler.request(Endpoints.WEBHOOK(webhookId), "delete", "json");
+        return this.requestHandler.request(Routes.webhook(webhookId, token), "delete", "json");
     }
 
     /**
@@ -151,8 +163,8 @@ class WebhookMethods {
      * client.webhook.executeWebhook('webhook Id', 'webhook token', {content: 'Hi from my webhook'})
      */
     public async executeWebhook(webhookId: string, token: string, data: WebhookCreateMessageData, options?: { wait?: false; disableEveryone?: boolean; thread_id?: string; }): Promise<void>;
-    public async executeWebhook(webhookId: string, token: string, data: WebhookCreateMessageData, options: { wait: true; disableEveryone?: boolean; thread_id?: string; }): Promise<import("discord-typings").MessageData>;
-    public async executeWebhook(webhookId: string, token: string, data: WebhookCreateMessageData, options: { wait?: boolean; disableEveryone?: boolean; thread_id?: string; } = { wait: false, disableEveryone: this.disableEveryone }): Promise<void | import("discord-typings").MessageData> {
+    public async executeWebhook(webhookId: string, token: string, data: WebhookCreateMessageData, options: { wait: true; disableEveryone?: boolean; thread_id?: string; }): Promise<RESTPostAPIWebhookWithTokenResult>;
+    public async executeWebhook(webhookId: string, token: string, data: WebhookCreateMessageData, options: { wait?: boolean; disableEveryone?: boolean; thread_id?: string; } = { wait: false, disableEveryone: this.disableEveryone }): Promise<void | RESTPostAPIWebhookWithTokenResult> {
         if (typeof data !== "string" && !data?.content && !data?.embeds && !data?.files) {
             throw new Error("Missing content or embeds or files");
         }
@@ -165,8 +177,8 @@ class WebhookMethods {
             data.content = data.content.replace(/@([^<>@ ]*)/gsmu, replaceEveryone);
         }
 
-        if (data.files) return this.requestHandler.request(Endpoints.WEBHOOK_TOKEN(webhookId, token) + (options?.wait ? "?wait=true" : "") + (options?.thread_id ? `${options?.wait ? "&" : "?"}thread_id=${options.thread_id}` : ""), "post", "multipart", data);
-        else return this.requestHandler.request(Endpoints.WEBHOOK_TOKEN(webhookId, token) + (options?.wait ? "?wait=true" : "") + (options?.thread_id ? `${options?.wait ? "&" : "?"}thread_id=${options.thread_id}` : ""), "post", "json", data);
+        if (data.files) return this.requestHandler.request(Routes.webhook(webhookId, token) + (options?.wait ? "?wait=true" : "") + (options?.thread_id ? `${options?.wait ? "&" : "?"}thread_id=${options.thread_id}` : ""), "post", "multipart", data);
+        else return this.requestHandler.request(Routes.webhook(webhookId, token) + (options?.wait ? "?wait=true" : "") + (options?.thread_id ? `${options?.wait ? "&" : "?"}thread_id=${options.thread_id}` : ""), "post", "json", data);
     }
 
     /**
@@ -177,13 +189,13 @@ class WebhookMethods {
      * @param options Options for disabling everyone/here pings or setting the wait query string
      * @returns Resolves the Promise on successful execution
      */
-    public async executeWebhookSlack(webhookId: string, token: string, data: any, options: { wait?: boolean; disableEveryone?: boolean; thread_id?: string; } = { wait: false, disableEveryone: this.disableEveryone }): Promise<void> {
+    public async executeWebhookSlack(webhookId: string, token: string, data: Record<string, unknown> & RESTPostAPIWebhookWithTokenSlackQuery, options: { wait?: boolean; disableEveryone?: boolean; thread_id?: string; } = { wait: false, disableEveryone: this.disableEveryone }): Promise<void> {
         // Sanitize the message
-        if (data.text && (options?.disableEveryone !== undefined ? options.disableEveryone : this.disableEveryone)) {
+        if (typeof data.text === "string" && (options?.disableEveryone !== undefined ? options.disableEveryone : this.disableEveryone)) {
             data.text = data.text.replace(/@([^<>@ ]*)/gsmu, replaceEveryone);
         }
 
-        return this.requestHandler.request(Endpoints.WEBHOOK_TOKEN_SLACK(webhookId, token) + (options?.wait ? "?wait=true" : "") + (options?.thread_id ? `${options?.wait ? "&" : "?"}thread_id=${options.thread_id}` : ""), "post", "json", data);
+        return this.requestHandler.request(Routes.webhookPlatform(webhookId, token, "slack") + (options?.wait ? "?wait=true" : "") + (options?.thread_id ? `${options?.wait ? "&" : "?"}thread_id=${options.thread_id}` : ""), "post", "json", data);
     }
 
     /**
@@ -194,8 +206,8 @@ class WebhookMethods {
      * @param options Options for disabling everyone/here pings or setting the wait query string
      * @returns Resolves the Promise on successful execution
      */
-    public async executeWebhookGitHub(webhookId: string, token: string, data: GitHubWebhookData, options: { wait?: boolean; thread_id?: string; } = { wait: false }): Promise<void> {
-        return this.requestHandler.request(Endpoints.WEBHOOK_TOKEN_GITHUB(webhookId, token) + (options?.wait ? "?wait=true" : "") + (options?.thread_id ? `${options?.wait ? "&" : "?"}thread_id=${options.thread_id}` : ""), "post", "json", data);
+    public async executeWebhookGitHub(webhookId: string, token: string, data: RESTPostAPIWebhookWithTokenGitHubQuery, options: { wait?: boolean; thread_id?: string; } = { wait: false }): Promise<void> {
+        return this.requestHandler.request(Routes.webhookPlatform(webhookId, token, "github") + (options?.wait ? "?wait=true" : "") + (options?.thread_id ? `${options?.wait ? "&" : "?"}thread_id=${options.thread_id}` : ""), "post", "json", data);
     }
 
     /**
@@ -205,8 +217,8 @@ class WebhookMethods {
      * @param messageId Id of the message
      * @returns [discord message](https://discord.com/developers/docs/resources/channel#message-object) object
      */
-    public async getWebhookMessage(webhookId: string, token: string, messageId: string): Promise<import("discord-typings").MessageData> {
-        return this.requestHandler.request(Endpoints.WEBHOOK_TOKEN_MESSAGE(webhookId, token, messageId), "get", "json");
+    public async getWebhookMessage(webhookId: string, token: string, messageId: string): Promise<RESTGetAPIWebhookWithTokenMessageResult> {
+        return this.requestHandler.request(Routes.webhookMessage(webhookId, token, messageId), "get", "json");
     }
 
     /**
@@ -217,12 +229,12 @@ class WebhookMethods {
      * @param data Data to send
      * @returns [discord message](https://discord.com/developers/docs/resources/channel#message-object) object
      */
-    public async editWebhookMessage(webhookId: string, token: string, messageId: string, data: WebhookEditMessageData): Promise<import("discord-typings").MessageData> {
+    public async editWebhookMessage(webhookId: string, token: string, messageId: string, data: WebhookEditMessageData): Promise<RESTPatchAPIWebhookWithTokenMessageResult> {
         let threadID: string | undefined = undefined;
         if (data.thread_id) threadID = data.thread_id;
         delete data.thread_id;
-        if (data.files) return this.requestHandler.request(Endpoints.WEBHOOK_TOKEN_MESSAGE(webhookId, token, messageId) + (threadID ? `?thread_id=${threadID}` : ""), "patch", "multipart", data);
-        else return this.requestHandler.request(Endpoints.WEBHOOK_TOKEN_MESSAGE(webhookId, token, messageId) + (threadID ? `?thread_id=${threadID}` : ""), "patch", "json", data);
+        if (data.files) return this.requestHandler.request(Routes.webhookMessage(webhookId, token, messageId) + (threadID ? `?thread_id=${threadID}` : ""), "patch", "multipart", data);
+        else return this.requestHandler.request(Routes.webhookMessage(webhookId, token, messageId) + (threadID ? `?thread_id=${threadID}` : ""), "patch", "json", data);
     }
 
     /**
@@ -233,7 +245,7 @@ class WebhookMethods {
      * @returns Resolves the Promise on successful execution
      */
     public async deleteWebhookMessage(webhookId: string, token: string, messageId: string): Promise<void> {
-        return this.requestHandler.request(Endpoints.WEBHOOK_TOKEN_MESSAGE(webhookId, token, messageId), "delete", "json");
+        return this.requestHandler.request(Routes.webhookMessage(webhookId, token, messageId), "delete", "json");
     }
 }
 
@@ -245,106 +257,19 @@ function replaceEveryone(match: string, target: string) {
     }
 }
 
-/**
- * Data from https://docs.github.com/en/developers/webhooks-and-events/webhook-events-and-payloads#webhook-payload-object
- */
-interface GitHubWebhookData {
-    action: "created" | "completed" | "rerequested" | "requested_action";
-    /**
-     * https://docs.github.com/en/rest/reference/checks#get-a-check-run
-     */
-    check_run?: any;
-    requested_action?: {
-        identifier: string;
-    };
-    /**
-     * https://docs.github.com/en/rest/reference/repos#get-a-repository
-     */
-    repository: any;
-    /**
-     * https://docs.github.com/en/rest/reference/orgs#get-an-organization
-     */
-    organization?: any;
-    installation?: any;
-    sender: any;
-}
-
-interface WebhookCreateMessageData {
-    /**
-     * content of the message
-     */
-    content?: string | null;
-    /**
-     * username to use for the webhook
-     */
-    username?: string | null;
-    /**
-     * avatar url of the webhook
-     */
-    avatar_url?: string | null;
-    /**
-     * send a text to speech message
-     */
-    tts?: boolean | null;
-    /**
-     * Files that should be uploaded
-     */
-    files?: Array<{
-        /**
-         * Name of the file
-         */
+type WebhookCreateMessageData = RESTPostAPIWebhookWithTokenJSONBody & {
+    files?: {
         name: string;
-        /**
-         * Buffer with file contents
-         */
         file: Buffer;
-    }>;
-    /**
-     * Array of [embed objects](https://discord.com/developers/docs/resources/channel#embed-object)
-     */
-    embeds?: Array<import("discord-typings").EmbedData>;
-    /**
-     * [alowed mentions object](https://discord.com/developers/docs/resources/channel#allowed-mentions-object)
-     */
-    allowed_mentions?: import("discord-typings").AllowedMentionsData;
-    /**
-     * [Buttons](https://discord.com/developers/docs/interactions/message-components#component-object) to add to the message
-     */
-    components?: Array<import("discord-typings").MessageComponentData>;
-}
+    }[];
+};
 
-interface WebhookEditMessageData {
-    /**
-     * content of the message
-     */
-    content?: string | null;
-    /**
-     * Array of [embed objects](https://discord.com/developers/docs/resources/channel#embed-object)
-     */
-    embeds?: Array<import("discord-typings").EmbedData> | null;
-    /**
-     * Files that should be updated
-     */
-    files?: Array<{
-        /**
-         * Name of the file
-         */
-        name: string;
-        /**
-         * Buffer with file contents
-         */
-        file: Buffer;
-    }>;
-    /**
-     * [alowed mentions object](https://discord.com/developers/docs/resources/channel#allowed-mentions-object)
-     */
-    allowed_mentions?: import("discord-typings").AllowedMentionsData | null;
-    attachments?: Array<Exclude<import("discord-typings").AttachmentData, "ephemeral" | "proxy_url" | "url" | "size">>;
-    /**
-     * [Buttons](https://discord.com/developers/docs/interactions/message-components#component-object) to add to the message
-     */
-    components?: Array<import("discord-typings").MessageComponentData>;
+type WebhookEditMessageData = RESTPatchAPIWebhookWithTokenMessageJSONBody & {
     thread_id?: string;
-}
+    files?: {
+        name: string;
+        file: Buffer;
+    }[];
+};
 
 export = WebhookMethods;
