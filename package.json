@@ -1,0 +1,44 @@
+{
+  "name": "@slash.js/rest",
+  "version": "1.0.0",
+  "description": "Minimalistic Rest client for the Discord Api used on slash.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "keywords": [],
+  "scripts": {
+    "build": "tsc -p .",
+    "build:docs": "typedoc --name \"Slash.js Rest\" --excludeExternals --sort static-first --sort alphabetical"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/slash.js/rest.git"
+  },
+  "bugs": "https://github.com/slash.js/rest/issues",
+  "author": "Drylozu",
+  "contributors": ["MARCROCK22"],
+  "license": "MIT",
+  "dependencies": {
+    "centra": "^2.5.0",
+    "discord-typings": "^9.0.4",
+    "form-data": "~4.0.0"
+  },
+  "devDependencies": {
+    "@types/centra": "^2.2.0",
+    "@types/node": "^16.0.1",
+    "@typescript-eslint/eslint-plugin": "^5.8.0",
+    "@typescript-eslint/parser": "^5.8.0",
+    "eslint": "^8.5.0",
+    "typedoc": "^0.22.10",
+    "typedoc-plugin-mdn-links": "^1.0.4",
+    "typedoc-plugin-missing-exports": "^0.22.6",
+    "typescript": "^4.5.4"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE.md"
+  ]
+}

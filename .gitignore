@@ -1,0 +1,9 @@
+node_modules
+examples/config.json
+
+dist
+docs
+
+.idea
+.DS_STORE
+yarn.lock
